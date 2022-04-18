@@ -1,20 +1,18 @@
-import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypegooseModule } from 'nestjs-typegoose';
+import { AuthModule } from '../src/auth/auth.module';
 
-import { getMongoDBConfig } from './config/mongo.config';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+import { getMockMongoDBConfig } from '../src/config/mock-mongo.config';
+import { Module } from '@nestjs/common';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
 		TypegooseModule.forRootAsync({
 			inject: [ConfigService],
-			useFactory: getMongoDBConfig,
+			useFactory: getMockMongoDBConfig,
 		}),
 		AuthModule,
-		UserModule,
 	],
 })
-export class AppModule {}
+export class MockAppModule {}
