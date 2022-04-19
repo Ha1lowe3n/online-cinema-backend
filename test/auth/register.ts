@@ -36,12 +36,11 @@ export const authRegister = () => {
 			.send(testRegistrationDto)
 			.expect(201)
 			.then(({ body }: request.Response) => {
-				expect(body.email).toBe(testRegistrationDto.email);
-				expect(body.passwordHash).toBeDefined();
-				expect(body.isAdmin).toBeFalsy();
-				expect(body.favoritesMovies).toEqual([]);
-				expect(body.createdAt).toBeDefined();
-				expect(body.updatedAt).toBeDefined();
+				expect(body.user._id).toBeDefined();
+				expect(body.user.email).toBe('test@test.com');
+				expect(body.user.isAdmin).toBeFalsy();
+				expect(body.refreshToken).toBeDefined();
+				expect(body.accessToken).toBeDefined();
 			});
 	});
 

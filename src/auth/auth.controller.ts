@@ -8,12 +8,11 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger';
-import { DocumentType } from '@typegoose/typegoose/lib/types';
 
 import { AuthErrorMessages } from '../utils/error-messages';
-import { UserModel } from '../user/user.model';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/registration.dto';
+import { AuthResponseType } from './types/auth-types';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -28,7 +27,7 @@ export class AuthController {
 	})
 	@ApiBody({ type: AuthDto })
 	@Post('register')
-	async register(@Body() dto: AuthDto): Promise<DocumentType<UserModel>> {
+	async register(@Body() dto: AuthDto): Promise<AuthResponseType> {
 		return await this.authService.register(dto);
 	}
 
@@ -41,7 +40,7 @@ export class AuthController {
 	@ApiBody({ type: AuthDto })
 	@Post('login')
 	@HttpCode(200)
-	async login(@Body() dto: AuthDto): Promise<DocumentType<UserModel>> {
+	async login(@Body() dto: AuthDto): Promise<AuthResponseType> {
 		return await this.authService.login(dto);
 	}
 }
