@@ -21,10 +21,13 @@ beforeEach(async () => {
 
 	app = moduleFixture.createNestApplication();
 	app.useGlobalPipes(new ValidationPipe());
+
 	await app.init();
 });
 
-afterAll(() => disconnect());
+afterAll(async () => {
+	await disconnect();
+});
 
 describe('auth/register (POST)', () => {
 	it('success - create new user', async () => {
