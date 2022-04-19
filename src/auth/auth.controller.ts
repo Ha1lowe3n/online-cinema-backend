@@ -11,7 +11,7 @@ import {
 
 import { AuthErrorMessages } from '../utils/error-messages';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto/registration.dto';
+import { RefreshTokenDto, AuthDto } from './dto';
 import { AuthResponseType } from './types/auth-types';
 
 @ApiTags('auth')
@@ -42,5 +42,21 @@ export class AuthController {
 	@HttpCode(200)
 	async login(@Body() dto: AuthDto): Promise<AuthResponseType> {
 		return await this.authService.login(dto);
+	}
+
+	@ApiOperation({
+		summary: 'refresh tokens',
+		description: 'refresh tokens (access and refresh) for user',
+	})
+	@ApiOkResponse({ description: 'Tokens were updated' })
+	@ApiBadRequestResponse({
+		description: `${AuthErrorMessages.EMAIL_NOT_VALID} | ${AuthErrorMessages.PASSWORD_LONG}
+		| ${AuthErrorMessages.EMAIL_NOT_FOUND} | ${AuthErrorMessages.PASSWORD_FAILED}`,
+	})
+	@ApiBody({ type: RefreshTokenDto })
+	@Post('login/refresh')
+	@HttpCode(200)
+	async refreshTokens(@Body() dto: RefreshTokenDto): Promise<AuthResponseType> {
+		return await this.authService.refreshTokens(dto);
 	}
 }

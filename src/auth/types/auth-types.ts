@@ -5,3 +5,4 @@ export type IssueTokensPairType = { refreshToken: string; accessToken: string };
 export type AuthResponseType = IssueTokensPairType & {
 	user: ReturnUserFieldsType;
 };
+export type JwtPayloadType = { _id: string };

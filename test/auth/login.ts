@@ -3,33 +3,25 @@ import * as request from 'supertest';
 import { disconnect } from 'mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockAppModule } from '../mock-app.module';
-import { AuthDto } from '../../src/auth/dto/registration.dto';
+
 import { AuthErrorMessages } from '../../src/utils/error-messages';
+import { testAuthDto } from './data';
 
 let app: INestApplication;
 
-const testAuthDto: AuthDto = {
-	email: 'test@test.com',
-	password: '12345',
-};
-
-beforeEach(async () => {
-	const moduleFixture: TestingModule = await Test.createTestingModule({
-		imports: [MockAppModule],
-	}).compile();
-
-	app = moduleFixture.createNestApplication();
-	app.useGlobalPipes(new ValidationPipe());
-
-	await app.init();
-});
-
-afterAll(async () => {
-	await disconnect();
-});
-
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const authLogin = () => {
+	beforeEach(async () => {
+		const moduleFixture: TestingModule = await Test.createTestingModule({
+			imports: [MockAppModule],
+		}).compile();
+
+		app = moduleFixture.createNestApplication();
+		app.useGlobalPipes(new ValidationPipe());
+
+		await app.init();
+	});
+
 	it('success - user authorization', async () => {
 		return request(app.getHttpServer())
 			.post('/auth/login')
