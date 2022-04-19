@@ -5,4 +5,5 @@ export const AuthErrorMessages = {
 	EMAIL_NOT_FOUND: 'Пользователь с таким email не зарегистрирован',
 	PASSWORD_FAILED: 'Неверный пароль',
 	USER_NOT_FOUND: 'Пользователь не найден',
+	REFRESH_TOKEN_NOT_VALID: 'Невалидный токен',
 };

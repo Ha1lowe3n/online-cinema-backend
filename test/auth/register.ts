@@ -3,13 +3,12 @@ import * as request from 'supertest';
 import { disconnect } from 'mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockAppModule } from '../mock-app.module';
-import { RegistrationDto } from '../../src/auth/dto/registration.dto';
+import { AuthDto } from '../../src/auth/dto/registration.dto';
 import { AuthErrorMessages } from '../../src/utils/error-messages';
 
 let app: INestApplication;
-let userId: string;
 
-const testRegistrationDto: RegistrationDto = {
+const testRegistrationDto: AuthDto = {
 	email: 'test@test.com',
 	password: '12345',
 };
@@ -29,14 +28,14 @@ afterAll(async () => {
 	await disconnect();
 });
 
-describe('auth/register (POST)', () => {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const authRegister = () => {
 	it('success - create new user', async () => {
 		return request(app.getHttpServer())
 			.post('/auth/register')
 			.send(testRegistrationDto)
 			.expect(201)
 			.then(({ body }: request.Response) => {
-				userId = body._id;
 				expect(body.email).toBe(testRegistrationDto.email);
 				expect(body.passwordHash).toBeDefined();
 				expect(body.isAdmin).toBeFalsy();
@@ -91,4 +90,4 @@ describe('auth/register (POST)', () => {
 				});
 		});
 	});
-});
+};
