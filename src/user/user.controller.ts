@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { DocumentType } from '@typegoose/typegoose/lib/types';
+
 import { AuthRoleGuard } from '../auth/decorators/auth-role.decorator';
 import { User } from './decoratos/user.decorator';
 import { UserModel } from './user.model';
