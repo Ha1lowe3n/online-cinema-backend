@@ -1,6 +1,5 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { disconnect } from 'mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockAppModule } from '../mock-app.module';
 
@@ -40,7 +39,7 @@ export const authLogin = () => {
 		return request(app.getHttpServer())
 			.post('/auth/login')
 			.send({ ...testAuthDto, email: 'bla@bla.com' })
-			.expect(400)
+			.expect(404)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe(AuthErrorMessages.EMAIL_NOT_FOUND);
 			});

@@ -1,6 +1,5 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { disconnect } from 'mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MockAppModule } from '../mock-app.module';

@@ -9,7 +9,7 @@ import { UserModel } from '../user/user.model';
 import { AuthErrorMessages } from '../utils/error-messages';
 import { AuthDto, RefreshTokenDto } from './dto';
 import {
-	AuthResponseType,
+	IAuthResponse,
 	IssueTokensPairType,
 	JwtPayloadType,
 	ReturnUserFieldsType,
@@ -22,7 +22,7 @@ export class AuthService {
 		private readonly jwtService: JwtService,
 	) {}
 
-	async register({ email, password }: AuthDto): Promise<AuthResponseType> {
+	async register({ email, password }: AuthDto): Promise<IAuthResponse> {
 		const findUser = await this.userModel.findOne({ email });
 		if (findUser) {
 			throw new HttpException(
@@ -38,10 +38,10 @@ export class AuthService {
 		return await this.authResponse(newUser);
 	}
 
-	async login({ email, password }: AuthDto): Promise<AuthResponseType> {
+	async login({ email, password }: AuthDto): Promise<IAuthResponse> {
 		const findUserByEmail = await this.userModel.findOne({ email });
 		if (!findUserByEmail) {
-			throw new HttpException(AuthErrorMessages.EMAIL_NOT_FOUND, HttpStatus.BAD_REQUEST);
+			throw new HttpException(AuthErrorMessages.EMAIL_NOT_FOUND, HttpStatus.NOT_FOUND);
 		}
 
 		const validatePassword = await compare(password, findUserByEmail.passwordHash);
@@ -52,11 +52,7 @@ export class AuthService {
 		return await this.authResponse(findUserByEmail);
 	}
 
-	async refreshTokens({ refreshToken }: RefreshTokenDto): Promise<AuthResponseType> {
-		// if (!refreshToken) {
-		// 	throw new HttpException(AuthErrorMessages.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
-		// }
-
+	async refreshTokens({ refreshToken }: RefreshTokenDto): Promise<IAuthResponse> {
 		let payload;
 		try {
 			payload = (await this.jwtService.verifyAsync(refreshToken)) as JwtPayloadType;
@@ -99,7 +95,7 @@ export class AuthService {
 		return { _id, email, isAdmin };
 	}
 
-	async authResponse(user: UserModel): Promise<AuthResponseType> {
+	async authResponse(user: UserModel): Promise<IAuthResponse> {
 		const tokens = await this.issueTokensPair(user._id.toString());
 		return {
 			user: this.returnUserFields(user),

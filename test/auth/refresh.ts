@@ -69,7 +69,7 @@ export const authLoginRefresh = () => {
 			.send({ refreshToken: 123 })
 			.expect(400)
 			.then(({ body }: request.Response) => {
-				expect(body.message[0]).toBe(AuthErrorMessages.REFRESH_TOKEN_NOT_VALID);
+				expect(body.message[0]).toBe(AuthErrorMessages.REFRESH_TOKEN_NOT_CORRECT);
 			});
 	});
 
