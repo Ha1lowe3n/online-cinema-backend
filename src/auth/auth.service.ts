@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
 
 import { UserModel } from '../user/user.model';
-import { AuthErrorMessages } from '../utils/error-messages';
+import { AuthErrorMessages } from '../utils/error-messages/auth-error-messages';
 import { AuthDto, RefreshTokenDto } from './dto';
 import {
 	IAuthResponse,

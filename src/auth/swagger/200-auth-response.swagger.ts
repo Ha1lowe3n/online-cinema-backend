@@ -9,8 +9,8 @@ class User implements ReturnUserFieldsType {
 	@ApiProperty({ example: 'aa@aa.com' })
 	email: string;
 
-	@ApiProperty({ example: false })
-	isAdmin?: boolean;
+	@ApiProperty({ example: true, default: false })
+	isAdmin: boolean;
 }
 
 export class AuthResponseSwagger implements IAuthResponse {

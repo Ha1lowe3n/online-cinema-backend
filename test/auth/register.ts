@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { MockAppModule } from '../mock-app.module';
-import { AuthErrorMessages } from '../../src/utils/error-messages';
+import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
 import { testAuthDto } from './data';
 
 let app: INestApplication;

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AuthErrorMessages } from '../../utils/error-messages';
+import { AuthErrorMessages } from '../../utils/error-messages/auth-error-messages';
 
 export class NotFoundLoginSwagger {
 	@ApiProperty({ example: 400 })

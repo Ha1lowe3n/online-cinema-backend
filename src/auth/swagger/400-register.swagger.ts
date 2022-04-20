@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AuthErrorMessages } from '../../utils/error-messages';
+import { AuthErrorMessages } from '../../utils/error-messages/auth-error-messages';
 
 const { EMAIL_NOT_VALID, PASSWORD_LONG } = AuthErrorMessages;
 

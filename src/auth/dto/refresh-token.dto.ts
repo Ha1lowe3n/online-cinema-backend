@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-import { AuthErrorMessages } from '../../utils/error-messages';
+import { AuthErrorMessages } from '../../utils/error-messages/auth-error-messages';
 
 export class RefreshTokenDto {
 	@IsString({ message: AuthErrorMessages.REFRESH_TOKEN_NOT_CORRECT })

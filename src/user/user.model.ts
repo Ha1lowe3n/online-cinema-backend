@@ -11,7 +11,7 @@ export class UserModel extends TimeStamps {
 	passwordHash: string;
 
 	@prop({ default: false })
-	isAdmin?: boolean;
+	isAdmin: boolean;
 
 	@prop({ type: () => String, _id: false, default: [] })
 	favoritesMovies?: [];

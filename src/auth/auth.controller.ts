@@ -11,7 +11,7 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { AuthErrorMessages } from '../utils/error-messages';
+import { AuthErrorMessages } from '../utils/error-messages/auth-error-messages';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto, AuthDto } from './dto';
 import { IAuthResponse } from './types/auth-types';
