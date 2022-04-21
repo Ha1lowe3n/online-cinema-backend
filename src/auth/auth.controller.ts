@@ -22,6 +22,7 @@ import {
 	NotFoundLoginSwagger,
 	AuthResponseSwagger,
 	BadRequestRegisterSwagger,
+	ConflictRegisterSwagger,
 } from './swagger';
 
 @ApiTags('auth')
@@ -31,7 +32,10 @@ export class AuthController {
 
 	@ApiOperation({ summary: 'user registration', description: 'Some descripton for registration' })
 	@ApiCreatedResponse({ description: 'User registration', type: AuthResponseSwagger })
-	@ApiConflictResponse({ description: AuthErrorMessages.EMAIL_ALREADY_REGISTERED })
+	@ApiConflictResponse({
+		description: AuthErrorMessages.EMAIL_ALREADY_REGISTERED,
+		type: ConflictRegisterSwagger,
+	})
 	@ApiBadRequestResponse({
 		description: `${AuthErrorMessages.PASSWORD_LONG} | ${AuthErrorMessages.EMAIL_NOT_VALID}`,
 		type: BadRequestRegisterSwagger,

@@ -3,18 +3,14 @@ import { TestingModule, Test } from '@nestjs/testing';
 import * as request from 'supertest';
 
 import { UserErrorMessages } from '../../src/utils/error-messages/user-error-messages';
-import { AuthDto } from '../../src/auth/dto/auth.dto';
+
 import { MockAppModule } from '../mock-app.module';
+import { testNewUser } from './data';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const usersGetProfile = () => {
 	let app: INestApplication;
 	let token: string;
-
-	const testNewUser: AuthDto = {
-		email: 'test@testla.ru',
-		password: '12345',
-	};
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({

@@ -4,6 +4,7 @@ import { BadRequestRefreshSwagger } from './400-refresh.swagger';
 import { UnauthorizedRefreshSwagger } from './401-refresh.swagger';
 import { BadRequestRegisterSwagger } from './400-register.swagger';
 import { AuthResponseSwagger } from './200-auth-response.swagger';
+import { ConflictRegisterSwagger } from './409-register.swagger';
 
 export {
 	NotFoundLoginSwagger,
@@ -12,4 +13,5 @@ export {
 	UnauthorizedRefreshSwagger,
 	BadRequestRegisterSwagger,
 	AuthResponseSwagger,
+	ConflictRegisterSwagger,
 };

@@ -53,9 +53,9 @@ export class AuthService {
 	}
 
 	async refreshTokens({ refreshToken }: RefreshTokenDto): Promise<IAuthResponse> {
-		let payload;
+		let payload: JwtPayloadType;
 		try {
-			payload = (await this.jwtService.verifyAsync(refreshToken)) as JwtPayloadType;
+			payload = await this.jwtService.verifyAsync(refreshToken);
 		} catch (err) {
 			if (err instanceof JsonWebTokenError) {
 				throw new HttpException(

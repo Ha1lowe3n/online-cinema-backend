@@ -12,6 +12,7 @@ async function bootstrap(): Promise<void> {
 		.setTitle('Online cinema API')
 		.setDescription('some description')
 		.setVersion('1.0.0')
+		.addBearerAuth({ type: 'http', scheme: 'Bearer', bearerFormat: 'token' }, 'access-token')
 		.build();
 	const document = SwaggerModule.createDocument(app, options);
 	SwaggerModule.setup('api', app, document, {

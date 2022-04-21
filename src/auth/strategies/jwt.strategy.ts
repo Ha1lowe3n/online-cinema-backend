@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { ModelType } from '@typegoose/typegoose/lib/types';
+import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
@@ -20,7 +20,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		});
 	}
 
-	async validate({ _id }: Pick<UserModel, '_id'>): Promise<boolean> {
-		return await this.userModel.findById(_id);
+	async validate({ _id }: Pick<UserModel, '_id'>): Promise<DocumentType<UserModel>> {
+		try {
+			return await this.userModel.findById(_id);
+		} catch (error) {
+			throw new UnauthorizedException();
+		}
 	}
 }
