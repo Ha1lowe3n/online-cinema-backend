@@ -1,7 +1,9 @@
-import { Body, Controller, Get, HttpCode, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
+	ApiForbiddenResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiTags,
@@ -21,30 +23,107 @@ import {
 	BadRequestUpdateRoleSwagger,
 	SuccessUpdateUserSwagger,
 	SuccessUpdateUserRoleSwagger,
+	NotFoundUserSwagger,
+	SuccessGetUsersCountSwagger,
+	SuccessFindUsersSwagger,
+	BadRequestDeleteOrGetUserUserSwagger,
 } from './swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IdValidationPipe } from '../pipes/id-validation.pipe';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { UserErrorMessages } from '../utils/error-messages/user-error-messages';
+import { ForbiddenSwagger } from '../swagger/403-forbidden.swagger';
+import { CommonErrorMessages } from '../utils/error-messages/common-error-messages';
 
 @ApiTags('users')
 @Controller('users')
 export class UserController {
 	constructor(private readonly userService: UserService) {}
 
-	@ApiOperation({ summary: 'get user profile', description: 'get user profile' })
-	@ApiOkResponse({ description: 'get profile', type: SuccessGetProfileSwagger })
+	@ApiBearerAuth()
+	@ApiOperation({
+		summary: 'get user profile by token',
+		description: 'get user profile by token. Inside token take _id',
+	})
+	@ApiOkResponse({ description: 'get profile by token', type: SuccessGetProfileSwagger })
+	@ApiNotFoundResponse({ description: 'User not found', type: NotFoundUserSwagger })
 	@ApiUnauthorizedResponse({
 		description: AuthErrorMessages.UNAUTHORIZED,
 		type: UnauthorizedSwagger,
 	})
-	@ApiBearerAuth()
 	@Get('profile')
 	@AuthRoleGuard()
-	async getProfileById(@User('_id') _id: string): Promise<DocumentType<UserModel>> {
+	async getProfileByToken(@User('_id') _id: string): Promise<DocumentType<UserModel>> {
 		return await this.userService.getProfileById(_id);
 	}
 
+	@ApiBearerAuth()
+	@ApiOperation({
+		summary: '[ADMIN] get user profile by user id',
+		description: 'only admin can get user profile by user id',
+	})
+	@ApiOkResponse({ description: 'get profile by user id', type: SuccessGetProfileSwagger })
+	@ApiBadRequestResponse({
+		description: CommonErrorMessages.ID_INVALID,
+		type: BadRequestDeleteOrGetUserUserSwagger,
+	})
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
+	@ApiNotFoundResponse({
+		description: UserErrorMessages.USER_NOT_FOUND,
+		type: NotFoundUserSwagger,
+	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
+	@Get('profile/:id')
+	@AuthRoleGuard('admin')
+	async getProfileByUserId(
+		@Param('id', IdValidationPipe) id: string,
+	): Promise<DocumentType<UserModel>> {
+		return await this.userService.getProfileById(id);
+	}
+
+	@ApiBearerAuth()
+	@ApiOperation({
+		summary: '[ADMIN] get users count',
+		description: 'only admin can get users count',
+	})
+	@ApiOkResponse({ description: 'get users count', type: SuccessGetUsersCountSwagger })
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
+	@Get('count')
+	@AuthRoleGuard('admin')
+	async getCountUsers(): Promise<any[]> {
+		return await this.userService.getCountUsers();
+	}
+
+	@ApiBearerAuth()
+	@ApiOperation({
+		summary: '[ADMIN] find all users or user by email with searchTerm (query param)',
+		description: `Only admin can find all users or user by email. 
+			Can get empty array if users count = 0 or user email not found`,
+	})
+	@ApiOkResponse({
+		description: 'find all users or user by email',
+		type: SuccessFindUsersSwagger,
+		isArray: true,
+	})
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
+	@Get()
+	@AuthRoleGuard('admin')
+	async findUsers(@Query('searchTerm') searchTerm?: string): Promise<DocumentType<UserModel>[]> {
+		return await this.userService.findUsers(searchTerm);
+	}
+
+	@ApiBearerAuth()
 	@ApiOperation({ summary: 'update user profile', description: 'update user profile' })
 	@ApiOkResponse({ description: 'update profile', type: SuccessUpdateUserSwagger })
 	@ApiUnauthorizedResponse({
@@ -55,7 +134,6 @@ export class UserController {
 		description: UserErrorMessages.UPDATE_DTO_EMPTY,
 		type: BadRequestUpdateSwagger,
 	})
-	@ApiBearerAuth()
 	@Patch('update')
 	@AuthRoleGuard()
 	@HttpCode(200)
@@ -66,17 +144,21 @@ export class UserController {
 		return await this.userService.updateUser(_id, dto);
 	}
 
-	@ApiOperation({ summary: 'update user role', description: 'update user role' })
+	@ApiBearerAuth()
+	@ApiOperation({
+		summary: '[ADMIN] update user role by admin',
+		description: 'only admin can update user role',
+	})
 	@ApiOkResponse({ description: 'update role', type: SuccessUpdateUserRoleSwagger })
 	@ApiUnauthorizedResponse({
 		description: AuthErrorMessages.UNAUTHORIZED,
 		type: UnauthorizedSwagger,
 	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
 	@ApiBadRequestResponse({
-		description: UserErrorMessages.UPDATE_DTO_EMPTY,
+		description: `${UserErrorMessages.UPDATE_DTO_EMPTY} | ${CommonErrorMessages.ID_INVALID}`,
 		type: BadRequestUpdateRoleSwagger,
 	})
-	@ApiBearerAuth()
 	@Patch('update/:id')
 	@AuthRoleGuard('admin')
 	@HttpCode(200)
@@ -85,5 +167,26 @@ export class UserController {
 		@Body() dto: UpdateUserRoleDto,
 	): Promise<DocumentType<UserModel>> {
 		return await this.userService.updateUserRole(id, dto);
+	}
+
+	@ApiBearerAuth()
+	@ApiOperation({
+		summary: '[ADMIN] delete user by id',
+		description: 'only admin can delete user',
+	})
+	@ApiOkResponse({ description: 'Only admin can delete user', type: SuccessGetProfileSwagger })
+	@ApiBadRequestResponse({
+		description: CommonErrorMessages.ID_INVALID,
+		type: BadRequestDeleteOrGetUserUserSwagger,
+	})
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
+	@Delete(':id')
+	@AuthRoleGuard('admin')
+	async deleteUser(@Param('id', IdValidationPipe) id: string): Promise<DocumentType<UserModel>> {
+		return await this.userService.deleteUser(id);
 	}
 }
