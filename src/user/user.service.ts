@@ -15,7 +15,11 @@ export class UserService {
 
 	async getProfileById(_id: string): Promise<DocumentType<UserModel>> {
 		try {
-			return await this.userModel.findById(_id);
+			const user = await this.userModel.findById(_id);
+			if (!user) {
+				throw new NotFoundException(UserErrorMessages.USER_NOT_FOUND);
+			}
+			return user;
 		} catch (error) {
 			throw new NotFoundException(UserErrorMessages.USER_NOT_FOUND);
 		}

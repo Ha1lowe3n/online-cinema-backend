@@ -1,14 +1,17 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { TestingModule, Test } from '@nestjs/testing';
 import * as request from 'supertest';
+import { sign } from 'jsonwebtoken';
+import { config } from 'dotenv';
+import { Types } from 'mongoose';
 
-import { UserErrorMessages } from '../../src/utils/error-messages/user-error-messages';
+config();
 
 import { MockAppModule } from '../mock-app.module';
 import { testNewUser } from './data';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const usersGetProfile = () => {
+export const usersGetProfileByToken = () => {
 	let app: INestApplication;
 	let token: string;
 
@@ -76,6 +79,21 @@ export const usersGetProfile = () => {
 		return request(app.getHttpServer())
 			.get(`/users/profile`)
 			.set('Authorization', 'Bearer ' + '1234567')
+			.expect(401)
+			.then(({ body }: request.Response) => {
+				expect(body.message).toBe('Unauthorized');
+			});
+	});
+
+	it('fail - get profile with fake id inside token', async () => {
+		const fakeId = new Types.ObjectId().toHexString();
+		const tokenWithFakeId = sign({ _id: fakeId }, process.env.JWT_SECRET_KEY);
+
+		console.log('fakeId: ', fakeId);
+
+		return request(app.getHttpServer())
+			.get(`/users/profile`)
+			.set('Authorization', 'Bearer ' + tokenWithFakeId)
 			.expect(401)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe('Unauthorized');

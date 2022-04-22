@@ -26,7 +26,7 @@ import {
 	NotFoundUserSwagger,
 	SuccessGetUsersCountSwagger,
 	SuccessFindUsersSwagger,
-	BadRequestDeleteOrGetUserUserSwagger,
+	BadRequestDeleteOrGetUserSwagger,
 } from './swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IdValidationPipe } from '../pipes/id-validation.pipe';
@@ -46,14 +46,20 @@ export class UserController {
 		description: 'get user profile by token. Inside token take _id',
 	})
 	@ApiOkResponse({ description: 'get profile by token', type: SuccessGetProfileSwagger })
-	@ApiNotFoundResponse({ description: 'User not found', type: NotFoundUserSwagger })
+	@ApiBadRequestResponse({
+		description: CommonErrorMessages.ID_INVALID,
+		type: BadRequestDeleteOrGetUserSwagger,
+	})
 	@ApiUnauthorizedResponse({
 		description: AuthErrorMessages.UNAUTHORIZED,
 		type: UnauthorizedSwagger,
 	})
+	@ApiNotFoundResponse({ description: 'User not found', type: NotFoundUserSwagger })
 	@Get('profile')
 	@AuthRoleGuard()
-	async getProfileByToken(@User('_id') _id: string): Promise<DocumentType<UserModel>> {
+	async getProfileByToken(
+		@User('_id', IdValidationPipe) _id: string,
+	): Promise<DocumentType<UserModel>> {
 		return await this.userService.getProfileById(_id);
 	}
 
@@ -65,17 +71,17 @@ export class UserController {
 	@ApiOkResponse({ description: 'get profile by user id', type: SuccessGetProfileSwagger })
 	@ApiBadRequestResponse({
 		description: CommonErrorMessages.ID_INVALID,
-		type: BadRequestDeleteOrGetUserUserSwagger,
+		type: BadRequestDeleteOrGetUserSwagger,
 	})
 	@ApiUnauthorizedResponse({
 		description: AuthErrorMessages.UNAUTHORIZED,
 		type: UnauthorizedSwagger,
 	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
 	@ApiNotFoundResponse({
 		description: UserErrorMessages.USER_NOT_FOUND,
 		type: NotFoundUserSwagger,
 	})
-	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
 	@Get('profile/:id')
 	@AuthRoleGuard('admin')
 	async getProfileByUserId(
@@ -177,7 +183,7 @@ export class UserController {
 	@ApiOkResponse({ description: 'Only admin can delete user', type: SuccessGetProfileSwagger })
 	@ApiBadRequestResponse({
 		description: CommonErrorMessages.ID_INVALID,
-		type: BadRequestDeleteOrGetUserUserSwagger,
+		type: BadRequestDeleteOrGetUserSwagger,
 	})
 	@ApiUnauthorizedResponse({
 		description: AuthErrorMessages.UNAUTHORIZED,

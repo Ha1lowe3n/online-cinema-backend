@@ -3,26 +3,18 @@ import { TestingModule, Test } from '@nestjs/testing';
 import * as request from 'supertest';
 import { sign } from 'jsonwebtoken';
 import { config } from 'dotenv';
-import { Types } from 'mongoose';
 
 config();
 
 import { UserErrorMessages } from '../../src/utils/error-messages/user-error-messages';
-import { AuthDto } from '../../src/auth/dto/auth.dto';
 import { MockAppModule } from '../mock-app.module';
-import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
-import { testNewUser } from './data';
+import { testAdminUser, testNewUser } from './data';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const usersUpdateRole = () => {
 	let app: INestApplication;
 	let token: string;
 	let userIdForRoleUpdate: string;
-
-	const testAdminUser: AuthDto = {
-		email: 'admin@testla.ru',
-		password: '12345',
-	};
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -45,7 +37,6 @@ export const usersUpdateRole = () => {
 	});
 
 	it('success - update user role', async () => {
-		console.log(userIdForRoleUpdate);
 		return request(app.getHttpServer())
 			.patch(`/users/update/${userIdForRoleUpdate}`)
 			.set('Authorization', 'Bearer ' + token)

@@ -7,7 +7,7 @@ import { SuccessUpdateUserRoleSwagger } from './200-update-role.swagger';
 import { NotFoundUserSwagger } from './404-user-not-found.swagger';
 import { SuccessGetUsersCountSwagger } from './200-get-count.swagger';
 import { SuccessFindUsersSwagger } from './200-find-users.swagger';
-import { BadRequestDeleteOrGetUserUserSwagger } from './400-delete.swagger';
+import { BadRequestDeleteOrGetUserSwagger } from './400-delete-or-get-users.swagger';
 
 export {
 	SuccessGetProfileSwagger,
@@ -19,5 +19,5 @@ export {
 	NotFoundUserSwagger,
 	SuccessGetUsersCountSwagger,
 	SuccessFindUsersSwagger,
-	BadRequestDeleteOrGetUserUserSwagger,
+	BadRequestDeleteOrGetUserSwagger,
 };
