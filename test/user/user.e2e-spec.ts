@@ -1,4 +1,5 @@
 import { disconnect } from 'mongoose';
+import { findUsers } from './find-users';
 import { usersGetUsersCount } from './get-cout-users';
 
 import { usersGetProfileByToken } from './get-profile-by-token';
@@ -13,5 +14,6 @@ afterAll(async () => {
 describe('users/profile (GET)', usersGetProfileByToken);
 describe('users/profile/:id (GET)', usersGetProfileByUserId);
 describe('users/count (GET)', usersGetUsersCount);
+describe('users (GET)', findUsers);
 describe('users/update (PATCH)', usersUpdate);
 describe('users/update/:id (PATCH)', usersUpdateRole);
