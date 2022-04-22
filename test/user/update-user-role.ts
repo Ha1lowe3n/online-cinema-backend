@@ -7,6 +7,7 @@ import { config } from 'dotenv';
 config();
 
 import { UserErrorMessages } from '../../src/utils/error-messages/user-error-messages';
+import { CommonErrorMessages } from './../../src/utils/error-messages/common-error-messages';
 import { MockAppModule } from '../mock-app.module';
 import { testAdminUser, testNewUser } from './data';
 
@@ -102,6 +103,17 @@ export const usersUpdateRole = () => {
 			.expect(401)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe('Unauthorized');
+			});
+	});
+
+	it('fail - token with invalid id user', async () => {
+		return request(app.getHttpServer())
+			.patch(`/users/update/12345`)
+			.set('Authorization', 'Bearer ' + token)
+			.send({ isAdmin: false })
+			.expect(400)
+			.then(({ body }: request.Response) => {
+				expect(body.message).toBe(CommonErrorMessages.ID_INVALID);
 			});
 	});
 

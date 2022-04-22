@@ -89,8 +89,6 @@ export const usersGetProfileByToken = () => {
 		const fakeId = new Types.ObjectId().toHexString();
 		const tokenWithFakeId = sign({ _id: fakeId }, process.env.JWT_SECRET_KEY);
 
-		console.log('fakeId: ', fakeId);
-
 		return request(app.getHttpServer())
 			.get(`/users/profile`)
 			.set('Authorization', 'Bearer ' + tokenWithFakeId)

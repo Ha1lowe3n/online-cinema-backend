@@ -1,4 +1,5 @@
 import { disconnect } from 'mongoose';
+import { deleteUser } from './delete-user';
 import { findUsers } from './find-users';
 import { usersGetUsersCount } from './get-cout-users';
 
@@ -17,3 +18,4 @@ describe('users/count (GET)', usersGetUsersCount);
 describe('users (GET)', findUsers);
 describe('users/update (PATCH)', usersUpdate);
 describe('users/update/:id (PATCH)', usersUpdateRole);
+describe('users/:id (DELETE)', deleteUser);
