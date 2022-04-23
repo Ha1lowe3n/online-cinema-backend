@@ -10,7 +10,7 @@ config();
 import { AuthErrorMessages } from './../../src/utils/error-messages/auth-error-messages';
 
 import { MockAppModule } from '../mock-app.module';
-import { testAdminUser, testNewUser } from './data';
+import { testAdminUser, testUserNewUser } from '../data';
 import { UserModel } from '../../src/user/user.model';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -34,7 +34,9 @@ export const findUsers = () => {
 		} = await request(app.getHttpServer()).post('/auth/login').send(testAdminUser);
 		adminToken = accessToken;
 
-		const { body } = await request(app.getHttpServer()).post('/auth/login').send(testNewUser);
+		const { body } = await request(app.getHttpServer())
+			.post('/auth/login')
+			.send(testUserNewUser);
 		userToken = body.accessToken;
 	});
 

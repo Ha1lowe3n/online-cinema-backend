@@ -1,9 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { GenreErrorMessages } from '../../utils/error-messages/genre-error-messages';
 
+const {
+	GENRE_TITLE_SHOULD_BE_STRING,
+	GENRE_TITLE_CANT_BE_EMPTY,
+	GENRE_SLUG_SHOULD_BE_STRING,
+	GENRE_DESCRIPTION_SHOULD_BE_STRING,
+	GENRE_ICON_SHOULD_BE_STRING,
+} = GenreErrorMessages;
 export class CreateGenreDto {
 	@ApiProperty({ type: String, description: 'title of genre', example: 'horror' })
-	@IsString()
+	@IsString({ message: GENRE_TITLE_SHOULD_BE_STRING })
+	@IsNotEmpty({ message: GENRE_TITLE_CANT_BE_EMPTY })
 	title: string;
 
 	@ApiProperty({
@@ -12,7 +21,7 @@ export class CreateGenreDto {
 		example: 'some slug',
 		required: false,
 	})
-	@IsString()
+	@IsString({ message: GENRE_SLUG_SHOULD_BE_STRING })
 	@IsOptional()
 	slug?: string;
 
@@ -22,7 +31,7 @@ export class CreateGenreDto {
 		example: 'genre is horror',
 		required: false,
 	})
-	@IsString()
+	@IsString({ message: GENRE_DESCRIPTION_SHOULD_BE_STRING })
 	@IsOptional()
 	description?: string;
 
@@ -32,7 +41,7 @@ export class CreateGenreDto {
 		example: 'material ui icon',
 		required: false,
 	})
-	@IsString()
+	@IsString({ message: GENRE_ICON_SHOULD_BE_STRING })
 	@IsOptional()
 	icon?: string;
 }

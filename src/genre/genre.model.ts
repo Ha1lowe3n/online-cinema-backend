@@ -4,10 +4,10 @@ import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface GenreModel extends Base {}
 export class GenreModel extends TimeStamps {
-	@prop({ unique: true, required: true })
+	@prop({ unique: true })
 	title: string;
 
-	@prop({ unique: true, default: '' })
+	@prop({ default: '' })
 	slug?: string;
 
 	@prop({ default: '' })

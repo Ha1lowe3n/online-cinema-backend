@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MockAppModule } from '../mock-app.module';
 
 import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
-import { testAuthDto } from './data';
+import { testAuthNewUser } from '../data';
 
 let app: INestApplication;
 
@@ -24,11 +24,11 @@ export const authLogin = () => {
 	it('success - user authorization', async () => {
 		return request(app.getHttpServer())
 			.post('/auth/login')
-			.send(testAuthDto)
+			.send(testAuthNewUser)
 			.expect(200)
 			.then(({ body }: request.Response) => {
 				expect(body.user._id).toBeDefined();
-				expect(body.user.email).toBe('test@test.com');
+				expect(body.user.email).toBe(testAuthNewUser.email);
 				expect(body.user.isAdmin).toBeFalsy();
 				expect(body.refreshToken).toBeDefined();
 				expect(body.accessToken).toBeDefined();
@@ -38,7 +38,7 @@ export const authLogin = () => {
 	it('fail - user authorization with not registered email', async () => {
 		return request(app.getHttpServer())
 			.post('/auth/login')
-			.send({ ...testAuthDto, email: 'bla@bla.com' })
+			.send({ ...testAuthNewUser, email: 'bla@bla.com' })
 			.expect(404)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe(AuthErrorMessages.EMAIL_NOT_FOUND);
@@ -48,7 +48,7 @@ export const authLogin = () => {
 	it('fail - user authorization with failed password', async () => {
 		return request(app.getHttpServer())
 			.post('/auth/login')
-			.send({ ...testAuthDto, password: '222222' })
+			.send({ ...testAuthNewUser, password: '222222' })
 			.expect(400)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe(AuthErrorMessages.PASSWORD_FAILED);
@@ -59,7 +59,7 @@ export const authLogin = () => {
 		it('fail - invalid email', async () => {
 			return request(app.getHttpServer())
 				.post('/auth/login')
-				.send({ ...testAuthDto, email: 'blaaa' })
+				.send({ ...testAuthNewUser, email: 'blaaa' })
 				.expect(400)
 				.then(({ body }: request.Response) => {
 					expect(body.message[0]).toBe(AuthErrorMessages.EMAIL_NOT_VALID);
@@ -69,7 +69,7 @@ export const authLogin = () => {
 		it('fail - short password', async () => {
 			return request(app.getHttpServer())
 				.post('/auth/login')
-				.send({ ...testAuthDto, password: '123' })
+				.send({ ...testAuthNewUser, password: '123' })
 				.expect(400)
 				.then(({ body }: request.Response) => {
 					expect(body.message[0]).toBe(AuthErrorMessages.PASSWORD_LONG);
@@ -80,7 +80,7 @@ export const authLogin = () => {
 			return request(app.getHttpServer())
 				.post('/auth/login')
 				.send({
-					...testAuthDto,
+					...testAuthNewUser,
 					password:
 						'342354325435324534534534534534534444444444444444444444444444444444444',
 				})

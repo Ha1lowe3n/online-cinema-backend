@@ -8,7 +8,7 @@ import { Types } from 'mongoose';
 config();
 
 import { MockAppModule } from '../mock-app.module';
-import { testNewUser } from './data';
+import { testUserNewUser } from '../data';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const usersGetProfileByToken = () => {
@@ -27,14 +27,17 @@ export const usersGetProfileByToken = () => {
 
 		const {
 			body: { accessToken },
-		} = await request(app.getHttpServer()).post('/auth/login').send(testNewUser);
+		} = await request(app.getHttpServer()).post('/auth/login').send(testUserNewUser);
 		if (!accessToken) {
-			await request(app.getHttpServer()).post('/auth/register').send(testNewUser).expect(201);
+			await request(app.getHttpServer())
+				.post('/auth/register')
+				.send(testUserNewUser)
+				.expect(201);
 			const {
 				body: { accessToken },
 			} = await request(app.getHttpServer())
 				.post('/auth/login')
-				.send(testNewUser)
+				.send(testUserNewUser)
 				.expect(200);
 			token = accessToken;
 		} else {
@@ -42,14 +45,14 @@ export const usersGetProfileByToken = () => {
 		}
 	});
 
-	it('success - get profile user', async () => {
+	it('success - get profile user by token', async () => {
 		return request(app.getHttpServer())
 			.get(`/users/profile`)
 			.set('Authorization', 'Bearer ' + token)
 			.expect(200)
 			.then(({ body }: request.Response) => {
 				expect(body._id).toBeDefined();
-				expect(body.email).toBe('test@testla.ru');
+				expect(body.email).toBe(testUserNewUser.email);
 				expect(body.isAdmin).toBeFalsy();
 				expect(body.passwordHash).toBeDefined();
 				expect(body.createdAt).toBeDefined();

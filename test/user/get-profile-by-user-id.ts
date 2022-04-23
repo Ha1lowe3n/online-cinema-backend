@@ -12,7 +12,7 @@ import { CommonErrorMessages } from './../../src/utils/error-messages/common-err
 import { AuthErrorMessages } from './../../src/utils/error-messages/auth-error-messages';
 
 import { MockAppModule } from '../mock-app.module';
-import { testAdminUser, testNewUser } from './data';
+import { testAdminUser, testUserNewUser } from '../data';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const usersGetProfileByUserId = () => {
@@ -36,7 +36,11 @@ export const usersGetProfileByUserId = () => {
 		} = await request(app.getHttpServer()).post('/auth/login').send(testAdminUser);
 		adminToken = accessToken;
 
-		const { body } = await request(app.getHttpServer()).post('/auth/login').send(testNewUser);
+		const { body } = await request(app.getHttpServer())
+			.post('/auth/login')
+			.send(testUserNewUser)
+			.expect(200);
+
 		userID = body.user._id;
 		userToken = body.accessToken;
 	});
@@ -48,7 +52,7 @@ export const usersGetProfileByUserId = () => {
 			.expect(200)
 			.then(({ body }: request.Response) => {
 				expect(body._id).toBeDefined();
-				expect(body.email).toBe('test@testla.ru');
+				expect(body.email).toBe(testUserNewUser.email);
 				expect(body.isAdmin).toBeFalsy();
 				expect(body.passwordHash).toBeDefined();
 				expect(body.createdAt).toBeDefined();

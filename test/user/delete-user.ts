@@ -11,7 +11,7 @@ config();
 import { AuthErrorMessages } from './../../src/utils/error-messages/auth-error-messages';
 
 import { MockAppModule } from '../mock-app.module';
-import { testAdminUser } from './data';
+import { testAdminUser, testUserNewUser } from '../data';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const deleteUser = () => {
@@ -41,11 +41,9 @@ export const deleteUser = () => {
 		adminToken = accessToken;
 
 		const { body } = await request(app.getHttpServer())
-			.post('/auth/register')
-			.send(testNewUserForDelete)
-			.expect(201);
-
-		console.log(body);
+			.post('/auth/login')
+			.send(testUserNewUser)
+			.expect(200);
 
 		userToken = body.accessToken;
 		userId = body.user._id;
@@ -68,7 +66,7 @@ export const deleteUser = () => {
 			.expect(200)
 			.then(({ body }: request.Response) => {
 				expect(body._id).toBeDefined();
-				expect(body.email).toBe('testdelete@testla.ru');
+				expect(body.email).toBe(testUserNewUser.email);
 				expect(body.isAdmin).toBeFalsy();
 				expect(body.passwordHash).toBeDefined();
 				expect(body.createdAt).toBeDefined();

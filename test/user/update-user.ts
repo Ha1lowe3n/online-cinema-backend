@@ -10,15 +10,16 @@ import { UserErrorMessages } from '../../src/utils/error-messages/user-error-mes
 
 import { MockAppModule } from '../mock-app.module';
 import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
-import { testNewUser } from './data';
+import { testAdminUser, testUserNewUser } from '../data';
 import { CommonErrorMessages } from '../../src/utils/error-messages/common-error-messages';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const usersUpdate = () => {
 	let app: INestApplication;
 	let token: string;
+	let updatedUserId: string;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [MockAppModule],
 		}).compile();
@@ -28,21 +29,23 @@ export const usersUpdate = () => {
 
 		await app.init();
 
+		const { body } = await request(app.getHttpServer())
+			.post('/auth/login')
+			.send(testUserNewUser)
+			.expect(200);
+		token = body.accessToken;
+		updatedUserId = body.user._id;
+	});
+
+	afterAll(async () => {
 		const {
 			body: { accessToken },
-		} = await request(app.getHttpServer()).post('/auth/login').send(testNewUser);
-		if (!accessToken) {
-			await request(app.getHttpServer()).post('/auth/register').send(testNewUser).expect(201);
-			const {
-				body: { accessToken },
-			} = await request(app.getHttpServer())
-				.post('/auth/login')
-				.send(testNewUser)
-				.expect(200);
-			token = accessToken;
-		} else {
-			token = accessToken;
-		}
+		} = await request(app.getHttpServer()).post('/auth/login').send(testAdminUser);
+
+		await request(app.getHttpServer())
+			.delete(`/users/${updatedUserId}`)
+			.set('Authorization', 'Bearer ' + accessToken)
+			.expect(200);
 	});
 
 	it('success - update user', async () => {

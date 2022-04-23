@@ -5,16 +5,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MockAppModule } from '../mock-app.module';
 import { RefreshTokenDto } from '../../src/auth/dto';
 import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
-import { testAuthDto } from './data';
+import { testAdminUser, testAuthNewUser } from '../data';
 
 let app: INestApplication;
 
-const testRefreshTokenDto: RefreshTokenDto = {
-	refreshToken: 'sss',
-};
-
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const authLoginRefresh = () => {
+	let refreshToken: string;
+	let userId: string;
+
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [MockAppModule],
@@ -25,28 +24,32 @@ export const authLoginRefresh = () => {
 
 		await app.init();
 
-		await request(app.getHttpServer())
+		const { body } = await request(app.getHttpServer())
 			.post('/auth/login')
-			.send(testAuthDto)
-			.expect(200)
-			.then(({ body }: request.Response) => {
-				testRefreshTokenDto.refreshToken = body.refreshToken;
-				expect(body.user._id).toBeDefined();
-				expect(body.user.email).toBe('test@test.com');
-				expect(body.user.isAdmin).toBeFalsy();
-				expect(body.refreshToken).toBeDefined();
-				expect(body.accessToken).toBeDefined();
-			});
+			.send(testAuthNewUser);
+		refreshToken = body.refreshToken;
+		userId = body.user._id;
+	});
+
+	afterAll(async () => {
+		const {
+			body: { accessToken },
+		} = await request(app.getHttpServer()).post('/auth/login').send(testAdminUser);
+
+		await request(app.getHttpServer())
+			.delete(`/users/${userId}`)
+			.set('Authorization', 'Bearer ' + accessToken)
+			.expect(200);
 	});
 
 	it('success - user refresh tokens', async () => {
 		return request(app.getHttpServer())
 			.post('/auth/login/refresh')
-			.send(testRefreshTokenDto)
+			.send({ refreshToken })
 			.expect(200)
 			.then(({ body }: request.Response) => {
 				expect(body.user._id).toBeDefined();
-				expect(body.user.email).toBe('test@test.com');
+				expect(body.user.email).toBe(testAuthNewUser.email);
 				expect(body.user.isAdmin).toBeFalsy();
 				expect(body.refreshToken).toBeDefined();
 				expect(body.accessToken).toBeDefined();

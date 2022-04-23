@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+	BadRequestException,
+	ConflictException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 import { DocumentType } from '@typegoose/typegoose';
@@ -14,9 +19,9 @@ export class GenreService {
 	constructor(@InjectModel(GenreModel) private readonly genreModel: ModelType<GenreModel>) {}
 
 	async getGenreBySlug(slug: string) {
-		const findSlug = await this.genreModel.findOne({ slug });
-		if (!findSlug) throw new NotFoundException(GenreErrorMessages.GENRE_NOT_FOUND);
-		return findSlug;
+		const findGenre = await this.genreModel.findOne({ slug });
+		if (!findGenre) throw new NotFoundException(GenreErrorMessages.GENRE_NOT_FOUND);
+		return findGenre;
 	}
 
 	async findGenres(searchTerm?: string): Promise<DocumentType<GenreModel>[]> {
@@ -41,6 +46,8 @@ export class GenreService {
 	}
 
 	async createGenre(dto: CreateGenreDto): Promise<DocumentType<GenreModel>> {
+		const findGenre = await this.genreModel.findOne({ title: dto.title });
+		if (findGenre) throw new ConflictException(GenreErrorMessages.GENRE_ALREADY_REGISTERED);
 		return await this.genreModel.create(dto);
 	}
 

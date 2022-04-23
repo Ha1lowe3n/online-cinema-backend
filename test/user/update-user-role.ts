@@ -9,7 +9,7 @@ config();
 import { UserErrorMessages } from '../../src/utils/error-messages/user-error-messages';
 import { CommonErrorMessages } from './../../src/utils/error-messages/common-error-messages';
 import { MockAppModule } from '../mock-app.module';
-import { testAdminUser, testNewUser } from './data';
+import { testAdminUser, testUserNewUser } from '../data';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const usersUpdateRole = () => {
@@ -32,24 +32,40 @@ export const usersUpdateRole = () => {
 		} = await request(app.getHttpServer()).post('/auth/login').send(testAdminUser);
 		token = accessToken;
 
-		// в бд должен быть обязательно user с ролью admin
-		const { body } = await request(app.getHttpServer()).post('/auth/login').send(testNewUser);
-		userIdForRoleUpdate = body.user._id;
+		const { body } = await request(app.getHttpServer())
+			.post('/auth/login')
+			.send(testUserNewUser);
+		if (!body.user) {
+			await request(app.getHttpServer())
+				.post('/auth/register')
+				.send(testUserNewUser)
+				.expect(201);
+			const { body } = await request(app.getHttpServer())
+				.post('/auth/login')
+				.send(testUserNewUser)
+				.expect(200);
+			userIdForRoleUpdate = body.user._id;
+		} else {
+			userIdForRoleUpdate = body.user._id;
+		}
 	});
 
 	it('success - update user role', async () => {
-		return request(app.getHttpServer())
+		await request(app.getHttpServer())
 			.patch(`/users/update/${userIdForRoleUpdate}`)
 			.set('Authorization', 'Bearer ' + token)
 			.send({ isAdmin: true })
 			.expect(200)
 			.then(({ body }: request.Response) => {
-				expect(body._id).toBeDefined();
-				expect(body.email).toBe('test@testla.ru');
 				expect(body.isAdmin).toBeTruthy();
-				expect(body.passwordHash).toBeDefined();
-				expect(body.createdAt).toBeDefined();
-				expect(body.updatedAt).toBeDefined();
+			});
+		return request(app.getHttpServer())
+			.patch(`/users/update/${userIdForRoleUpdate}`)
+			.set('Authorization', 'Bearer ' + token)
+			.send({ isAdmin: false })
+			.expect(200)
+			.then(({ body }: request.Response) => {
+				expect(body.isAdmin).toBeFalsy();
 			});
 	});
 

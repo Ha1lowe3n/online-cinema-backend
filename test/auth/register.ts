@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { MockAppModule } from '../mock-app.module';
 import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
-import { testAuthDto } from './data';
+import { testAuthNewUser } from '../data';
 
 let app: INestApplication;
 
@@ -24,11 +24,11 @@ export const authRegister = () => {
 	it('success - create new user', async () => {
 		return request(app.getHttpServer())
 			.post('/auth/register')
-			.send(testAuthDto)
+			.send(testAuthNewUser)
 			.expect(201)
 			.then(({ body }: request.Response) => {
 				expect(body.user._id).toBeDefined();
-				expect(body.user.email).toBe('test@test.com');
+				expect(body.user.email).toBe(testAuthNewUser.email);
 				expect(body.user.isAdmin).toBeFalsy();
 				expect(body.refreshToken).toBeDefined();
 				expect(body.accessToken).toBeDefined();
@@ -38,7 +38,7 @@ export const authRegister = () => {
 	it('fail - create new user with already registered email', async () => {
 		return request(app.getHttpServer())
 			.post('/auth/register')
-			.send(testAuthDto)
+			.send(testAuthNewUser)
 			.expect(409)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe(AuthErrorMessages.EMAIL_ALREADY_REGISTERED);
@@ -49,7 +49,7 @@ export const authRegister = () => {
 		it('fail - invalid email', async () => {
 			return request(app.getHttpServer())
 				.post('/auth/register')
-				.send({ ...testAuthDto, email: 'blaaa' })
+				.send({ ...testAuthNewUser, email: 'blaaa' })
 				.expect(400)
 				.then(({ body }: request.Response) => {
 					expect(body.message[0]).toBe(AuthErrorMessages.EMAIL_NOT_VALID);
@@ -59,7 +59,7 @@ export const authRegister = () => {
 		it('fail - short password', async () => {
 			return request(app.getHttpServer())
 				.post('/auth/register')
-				.send({ ...testAuthDto, password: '123' })
+				.send({ ...testAuthNewUser, password: '123' })
 				.expect(400)
 				.then(({ body }: request.Response) => {
 					expect(body.message[0]).toBe(AuthErrorMessages.PASSWORD_LONG);
@@ -70,7 +70,7 @@ export const authRegister = () => {
 			return request(app.getHttpServer())
 				.post('/auth/register')
 				.send({
-					...testAuthDto,
+					...testAuthNewUser,
 					password:
 						'342354325435324534534534534534534444444444444444444444444444444444444',
 				})
