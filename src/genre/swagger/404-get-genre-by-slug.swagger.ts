@@ -2,7 +2,7 @@ import { GenreErrorMessages } from '../../utils/error-messages/genre-error-messa
 import { ApiProperty } from '@nestjs/swagger';
 import { NotFoundSwagger } from '../../swagger/404-not-found.swagger';
 
-export class NotFoundGenreBySlugSwagger extends NotFoundSwagger {
+export class NotFoundGenreSwagger extends NotFoundSwagger {
 	@ApiProperty({ example: GenreErrorMessages.GENRE_NOT_FOUND })
 	message: string;
 }

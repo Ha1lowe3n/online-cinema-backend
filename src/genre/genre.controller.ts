@@ -4,6 +4,7 @@ import {
 	ApiBearerAuth,
 	ApiConflictResponse,
 	ApiCreatedResponse,
+	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -22,8 +23,13 @@ import {
 	SuccessReturnGenreSwagger,
 	BadRequestCreateGenreSwagger,
 	ConflictCreateGenreSwagger,
-	NotFoundGenreBySlugSwagger,
+	NotFoundGenreSwagger,
 } from './swagger';
+import { ForbiddenSwagger } from '../swagger/403-forbidden.swagger';
+import { GenreErrorMessages } from '../utils/error-messages/genre-error-messages';
+import { IdValidationPipe } from '../pipes/id-validation.pipe';
+import { CommonErrorMessages } from '../utils/error-messages/common-error-messages';
+import { BadRequestInvalidIdSwagger } from '../swagger/400-invalid-id.swagger';
 
 @ApiTags('genre')
 @Controller('genre')
@@ -38,13 +44,35 @@ export class GenreController {
 		type: UnauthorizedSwagger,
 	})
 	@ApiNotFoundResponse({
-		description: 'genre by slug not found',
-		type: NotFoundGenreBySlugSwagger,
+		description: GenreErrorMessages.GENRE_NOT_FOUND,
+		type: NotFoundGenreSwagger,
 	})
 	@Get('by-slug/:slug')
 	@AuthRoleGuard()
 	async getGenreBySlug(@Param('slug') slug: string) {
 		return await this.genreService.getGenreBySlug(slug);
+	}
+
+	@ApiBearerAuth()
+	@ApiOperation({ summary: 'get genre by genre id' })
+	@ApiOkResponse({ description: 'get genre by genre id', type: SuccessReturnGenreSwagger })
+	@ApiBadRequestResponse({
+		description: CommonErrorMessages.ID_INVALID,
+		type: BadRequestInvalidIdSwagger,
+	})
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
+	@ApiNotFoundResponse({
+		description: GenreErrorMessages.GENRE_NOT_FOUND,
+		type: NotFoundGenreSwagger,
+	})
+	@Get(':id')
+	@AuthRoleGuard('admin')
+	async getGenreById(@Param('id', IdValidationPipe) id: string) {
+		return await this.genreService.getGenreById(id);
 	}
 
 	@ApiBearerAuth()

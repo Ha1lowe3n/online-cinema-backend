@@ -27,7 +27,6 @@ import {
 	NotFoundUserSwagger,
 	SuccessGetUsersCountSwagger,
 	SuccessFindUsersSwagger,
-	BadRequestDeleteOrGetUserSwagger,
 } from './swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IdValidationPipe } from '../pipes/id-validation.pipe';
@@ -35,6 +34,7 @@ import { UpdateUserRoleDto } from './dto/update-user-role.dto';
 import { UserErrorMessages } from '../utils/error-messages/user-error-messages';
 import { ForbiddenSwagger } from '../swagger/403-forbidden.swagger';
 import { CommonErrorMessages } from '../utils/error-messages/common-error-messages';
+import { BadRequestInvalidIdSwagger } from '../swagger/400-invalid-id.swagger';
 
 @ApiTags('users')
 @Controller('users')
@@ -49,7 +49,7 @@ export class UserController {
 	@ApiOkResponse({ description: 'get profile by token', type: SuccessGetProfileSwagger })
 	@ApiBadRequestResponse({
 		description: CommonErrorMessages.ID_INVALID,
-		type: BadRequestDeleteOrGetUserSwagger,
+		type: BadRequestInvalidIdSwagger,
 	})
 	@ApiUnauthorizedResponse({
 		description: AuthErrorMessages.UNAUTHORIZED,
@@ -72,7 +72,7 @@ export class UserController {
 	@ApiOkResponse({ description: 'get profile by user id', type: SuccessGetProfileSwagger })
 	@ApiBadRequestResponse({
 		description: CommonErrorMessages.ID_INVALID,
-		type: BadRequestDeleteOrGetUserSwagger,
+		type: BadRequestInvalidIdSwagger,
 	})
 	@ApiUnauthorizedResponse({
 		description: AuthErrorMessages.UNAUTHORIZED,
@@ -185,7 +185,7 @@ export class UserController {
 	@ApiOkResponse({ description: 'Only admin can delete user', type: SuccessGetProfileSwagger })
 	@ApiBadRequestResponse({
 		description: CommonErrorMessages.ID_INVALID,
-		type: BadRequestDeleteOrGetUserSwagger,
+		type: BadRequestInvalidIdSwagger,
 	})
 	@ApiUnauthorizedResponse({
 		description: AuthErrorMessages.UNAUTHORIZED,
