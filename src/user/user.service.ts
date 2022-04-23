@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { DocumentType, ModelType } from '@typegoose/typegoose/lib/types';
 import { hash } from 'bcrypt';
 import { InjectModel } from 'nestjs-typegoose';
+import { CommonErrorMessages } from '../utils/error-messages/common-error-messages';
 
 import { UserErrorMessages } from '../utils/error-messages/user-error-messages';
 import { UpdateUserRoleDto } from './dto/update-user-role.dto';
@@ -32,7 +33,7 @@ export class UserService {
 
 	async updateUser(_id: string, dto: UpdateUserDto): Promise<DocumentType<UserModel>> {
 		if (Object.keys(dto).length === 0) {
-			throw new BadRequestException(UserErrorMessages.UPDATE_DTO_EMPTY);
+			throw new BadRequestException(CommonErrorMessages.UPDATE_DTO_EMPTY);
 		}
 
 		const updateData: UpdateUserDataType = {};
@@ -48,7 +49,7 @@ export class UserService {
 
 	async updateUserRole(id: string, dto: UpdateUserRoleDto): Promise<DocumentType<UserModel>> {
 		if (!dto) {
-			throw new BadRequestException(UserErrorMessages.UPDATE_DTO_EMPTY);
+			throw new BadRequestException(CommonErrorMessages.UPDATE_DTO_EMPTY);
 		}
 		return await this.userModel.findByIdAndUpdate(id, dto, { new: true });
 	}

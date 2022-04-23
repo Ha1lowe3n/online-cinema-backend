@@ -11,6 +11,7 @@ import { UserErrorMessages } from '../../src/utils/error-messages/user-error-mes
 import { MockAppModule } from '../mock-app.module';
 import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
 import { testNewUser } from './data';
+import { CommonErrorMessages } from '../../src/utils/error-messages/common-error-messages';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const usersUpdate = () => {
@@ -66,7 +67,7 @@ export const usersUpdate = () => {
 			.set('Authorization', 'Bearer ' + token)
 			.expect(400)
 			.then(({ body }: request.Response) => {
-				expect(body.message).toBe(UserErrorMessages.UPDATE_DTO_EMPTY);
+				expect(body.message).toBe(CommonErrorMessages.UPDATE_DTO_EMPTY);
 			});
 	});
 

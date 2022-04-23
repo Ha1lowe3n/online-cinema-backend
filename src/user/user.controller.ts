@@ -137,7 +137,7 @@ export class UserController {
 		type: UnauthorizedSwagger,
 	})
 	@ApiBadRequestResponse({
-		description: UserErrorMessages.UPDATE_DTO_EMPTY,
+		description: CommonErrorMessages.UPDATE_DTO_EMPTY,
 		type: BadRequestUpdateSwagger,
 	})
 	@Patch('update')
@@ -162,7 +162,7 @@ export class UserController {
 	})
 	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
 	@ApiBadRequestResponse({
-		description: `${UserErrorMessages.UPDATE_DTO_EMPTY} | ${CommonErrorMessages.ID_INVALID}`,
+		description: `${CommonErrorMessages.UPDATE_DTO_EMPTY} | ${CommonErrorMessages.ID_INVALID}`,
 		type: BadRequestUpdateRoleSwagger,
 	})
 	@Patch('update/:id')
