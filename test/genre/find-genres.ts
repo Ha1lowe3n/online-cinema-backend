@@ -1,4 +1,4 @@
-import { testNewGenre } from './../data';
+import { testNewGenre } from '../data';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { TestingModule, Test } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -8,16 +8,25 @@ import { Types } from 'mongoose';
 
 config();
 
-import { GenreErrorMessages } from './../../src/utils/error-messages/genre-error-messages';
+import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
+import { GenreErrorMessages } from '../../src/utils/error-messages/genre-error-messages';
+
 import { MockAppModule } from '../mock-app.module';
 import { testAdminUser, testGenreNewUser } from '../data';
+import { CreateGenreDto } from '../../src/genre/dto/create-genre.dto';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const getGenreBySlug = () => {
+export const findGenres = () => {
 	let app: INestApplication;
 	let adminToken: string;
 	let userToken: string;
 	let genreUserId: string;
+
+	const newGenre: CreateGenreDto = {
+		title: 'new genre',
+		slug: 'new genre',
+		description: 'new genre desc',
+	};
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -61,20 +70,54 @@ export const getGenreBySlug = () => {
 			.expect(200);
 	});
 
-	it('success - get genre by slug', async () => {
+	it('success - find all genres', async () => {
+		await request(app.getHttpServer())
+			.post(`/genre/create`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.send(newGenre)
+			.expect(201)
+			.then(({ body }: request.Response) => {
+				expect(body.title).toBe(newGenre.title);
+			});
+
 		return request(app.getHttpServer())
-			.get(`/genre/by-slug/${testNewGenre.slug}`)
-			.set('Authorization', 'Bearer ' + userToken)
+			.get(`/genre`)
+			.set('Authorization', 'Bearer ' + adminToken)
 			.expect(200)
 			.then(({ body }: request.Response) => {
-				expect(body.slug).toBe(testNewGenre.slug);
-				expect(body.title).toBe(testNewGenre.title);
+				expect(Array.isArray(body)).toBeTruthy();
+				expect(body).toHaveLength(2);
+				expect(body[0].title).toBe(testNewGenre.title);
+				expect(body[1].title).toBe(newGenre.title);
+			});
+	});
+
+	it('success - find genres with searchTerm', async () => {
+		return request(app.getHttpServer())
+			.get(`/genre?searchTerm=new`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.expect(200)
+			.then(({ body }: request.Response) => {
+				expect(Array.isArray(body)).toBeTruthy();
+				expect(body).toHaveLength(1);
+				expect(body[0].title).toBe(newGenre.title);
+			});
+	});
+
+	it('success - get empty array of genres with jest searchTerm', async () => {
+		return request(app.getHttpServer())
+			.get(`/genre?searchTerm=hoj9jihjjetgergerijeio404i3j0jt3i4joi`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.expect(200)
+			.then(({ body }: request.Response) => {
+				expect(Array.isArray(body)).toBeTruthy();
+				expect(body).toHaveLength(0);
 			});
 	});
 
 	it('fail - Unauthorized (401): Unauthorized', async () => {
 		return request(app.getHttpServer())
-			.get(`/genre/by-slug/${testNewGenre.slug}`)
+			.get(`/genre`)
 			.expect(401)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe('Unauthorized');
@@ -86,23 +129,11 @@ export const getGenreBySlug = () => {
 		const tokenWithFakeId = sign({ _id: fakeId }, process.env.JWT_SECRET_KEY);
 
 		return request(app.getHttpServer())
-			.get(`/genre/by-slug/${testNewGenre.slug}`)
+			.get(`/genre`)
 			.set('Authorization', 'Bearer ' + tokenWithFakeId)
-			.send(testNewGenre)
 			.expect(401)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe('Unauthorized');
-			});
-	});
-
-	it('fail - Not found (404): genre by slug not found', async () => {
-		return request(app.getHttpServer())
-			.get(`/genre/by-slug/blaa`)
-			.set('Authorization', 'Bearer ' + userToken)
-			.send(testNewGenre)
-			.expect(404)
-			.then(({ body }: request.Response) => {
-				expect(body.message).toBe(GenreErrorMessages.GENRE_NOT_FOUND);
 			});
 	});
 };

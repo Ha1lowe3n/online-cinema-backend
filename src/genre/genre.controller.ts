@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
@@ -7,10 +7,16 @@ import {
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
+	ApiQuery,
 	ApiTags,
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { DocumentType } from '@typegoose/typegoose';
+import { UnauthorizedSwagger } from '../user/swagger';
+import { AuthErrorMessages } from '../utils/error-messages/auth-error-messages';
 import { AuthRoleGuard } from '../auth/decorators/auth-role.decorator';
 import { CreateGenreDto } from './dto/create-genre.dto';
+import { GenreModel } from './genre.model';
 import { GenreService } from './genre.service';
 import {
 	SuccessReturnGenreSwagger,
@@ -27,6 +33,10 @@ export class GenreController {
 	@ApiBearerAuth()
 	@ApiOperation({ summary: 'get genre by slug' })
 	@ApiOkResponse({ description: 'get genre by slug', type: SuccessReturnGenreSwagger })
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
 	@ApiNotFoundResponse({
 		description: 'genre by slug not found',
 		type: NotFoundGenreBySlugSwagger,
@@ -35,6 +45,26 @@ export class GenreController {
 	@AuthRoleGuard()
 	async getGenreBySlug(@Param('slug') slug: string) {
 		return await this.genreService.getGenreBySlug(slug);
+	}
+
+	@ApiBearerAuth()
+	@ApiOperation({ summary: 'get all genres or genre by searchTerm' })
+	@ApiQuery({ name: 'searchTerm', required: false })
+	@ApiOkResponse({
+		description: 'get genre by slug',
+		type: SuccessReturnGenreSwagger,
+		isArray: true,
+	})
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
+	@Get()
+	@AuthRoleGuard()
+	async findGenres(
+		@Query('searchTerm') searchTerm?: string,
+	): Promise<DocumentType<GenreModel>[]> {
+		return await this.genreService.findGenres(searchTerm);
 	}
 
 	@ApiBearerAuth()
@@ -47,6 +77,10 @@ export class GenreController {
 		description: 'bad request - error validate dto',
 		type: BadRequestCreateGenreSwagger,
 	})
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
 	@ApiConflictResponse({
 		description: 'conflict - genre already registered',
 		type: ConflictCreateGenreSwagger,
@@ -54,7 +88,6 @@ export class GenreController {
 	@Post('create')
 	@AuthRoleGuard('admin')
 	async createGenre(@Body() dto: CreateGenreDto) {
-		console.log(dto);
 		return await this.genreService.createGenre(dto);
 	}
 }

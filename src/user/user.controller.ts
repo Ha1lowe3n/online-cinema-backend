@@ -6,6 +6,7 @@ import {
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
+	ApiQuery,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -113,6 +114,7 @@ export class UserController {
 		description: `Only admin can find all users or user by email. 
 			Can get empty array if users count = 0 or user email not found`,
 	})
+	@ApiQuery({ name: 'searchTerm', required: false })
 	@ApiOkResponse({
 		description: 'find all users or user by email',
 		type: SuccessFindUsersSwagger,
