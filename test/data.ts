@@ -21,4 +21,5 @@ export const testAdminUser: AuthDto = {
 
 export const testNewGenre: CreateGenreDto = {
 	title: 'horror',
+	slug: 'some-slug',
 };

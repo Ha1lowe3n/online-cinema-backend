@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class SuccessCreateGenreSwagger {
+export class SuccessReturnGenreSwagger {
 	@ApiProperty({ example: '6263dded652b2193a80e3eee' })
 	_id: string;
 
