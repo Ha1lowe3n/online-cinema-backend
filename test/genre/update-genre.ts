@@ -10,16 +10,31 @@ config();
 
 import { AuthErrorMessages } from './../../src/utils/error-messages/auth-error-messages';
 import { GenreErrorMessages } from './../../src/utils/error-messages/genre-error-messages';
-
+import { CommonErrorMessages } from './../../src/utils/error-messages/common-error-messages';
+import { CreateGenreDto } from '../../src/genre/dto/create-genre.dto';
+import { UpdateGenreDto } from '../../src/genre/dto/update-genre.dto';
 import { MockAppModule } from '../mock-app.module';
 import { testAdminUser, testGenreNewUser } from '../data';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const createGenre = () => {
+export const updateGenre = () => {
 	let app: INestApplication;
 	let adminToken: string;
 	let userToken: string;
 	let genreUserId: string;
+	let genreId: string;
+
+	const newGenre3: CreateGenreDto = {
+		title: 'new genre 3',
+		slug: 'new-genre-3',
+		description: 'new genre 3 desc',
+	};
+	const updateDataGenre: UpdateGenreDto = {
+		title: 'somebody',
+		slug: 'some-body',
+		description: 'somebody desc',
+		icon: 'some icon',
+	};
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -63,21 +78,58 @@ export const createGenre = () => {
 			.expect(200);
 	});
 
-	it('success - create genre', async () => {
-		return request(app.getHttpServer())
+	it('success - update genre', async () => {
+		await request(app.getHttpServer())
 			.post(`/genre/create`)
 			.set('Authorization', 'Bearer ' + adminToken)
-			.send(testNewGenre)
+			.send(newGenre3)
 			.expect(201)
 			.then(({ body }: request.Response) => {
-				expect(body.title).toBe(testNewGenre.title);
+				genreId = body._id;
+				expect(body.title).toBe(newGenre3.title);
+				expect(body.slug).toBe(newGenre3.slug);
+				expect(body.description).toBe(newGenre3.description);
+			});
+
+		return request(app.getHttpServer())
+			.patch(`/genre/update/${genreId}`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.send(updateDataGenre)
+			.expect(200)
+			.then(({ body }: request.Response) => {
+				expect(body.title).toBe(updateDataGenre.title);
+				expect(body.slug).toBe(updateDataGenre.slug);
+				expect(body.description).toBe(updateDataGenre.description);
+				expect(body.icon).toBe(updateDataGenre.icon);
 			});
 	});
 
-	it('fail - Unauthorized (401): Unauthorized', async () => {
+	it('fail - Bad request (400): invalid genre id', async () => {
 		return request(app.getHttpServer())
-			.post(`/genre/create`)
-			.send(testNewGenre)
+			.patch(`/genre/update/123`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.send(updateDataGenre)
+			.expect(400)
+			.then(({ body }: request.Response) => {
+				expect(body.message).toBe(CommonErrorMessages.ID_INVALID);
+			});
+	});
+
+	it('fail - Bad request (400): empty update genre dto', async () => {
+		return request(app.getHttpServer())
+			.patch(`/genre/update/${genreId}`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.send({})
+			.expect(400)
+			.then(({ body }: request.Response) => {
+				expect(body.message).toBe(CommonErrorMessages.UPDATE_DTO_EMPTY);
+			});
+	});
+
+	it('fail - Unauthorized (401): Unauthorized user want to update genre', async () => {
+		return request(app.getHttpServer())
+			.patch(`/genre/update/${genreId}`)
+			.send(updateDataGenre)
 			.expect(401)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe('Unauthorized');
@@ -89,38 +141,27 @@ export const createGenre = () => {
 		const tokenWithFakeId = sign({ _id: fakeId }, process.env.JWT_SECRET_KEY);
 
 		return request(app.getHttpServer())
-			.post(`/genre/create`)
+			.patch(`/genre/update/${genreId}`)
 			.set('Authorization', 'Bearer ' + tokenWithFakeId)
-			.send(testNewGenre)
+			.send(updateDataGenre)
 			.expect(401)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe('Unauthorized');
 			});
 	});
 
-	it('fail - Forbidden (403): not an admin want to create genre', async () => {
+	it('fail - Forbidden (403): not an admin want to update genre', async () => {
 		return request(app.getHttpServer())
-			.post(`/genre/create`)
+			.patch(`/genre/update/${genreId}`)
 			.set('Authorization', 'Bearer ' + userToken)
-			.send(testNewGenre)
+			.send(updateDataGenre)
 			.expect(403)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe(AuthErrorMessages.FORBIDDEN);
 			});
 	});
 
-	it('fail - Conflict (409): genre is already registered', async () => {
-		return request(app.getHttpServer())
-			.post(`/genre/create`)
-			.set('Authorization', 'Bearer ' + adminToken)
-			.send(testNewGenre)
-			.expect(409)
-			.then(({ body }: request.Response) => {
-				expect(body.message).toBe(GenreErrorMessages.GENRE_ALREADY_REGISTERED);
-			});
-	});
-
-	describe('validate create dto', () => {
+	describe('validate update dto', () => {
 		it('fail - Bad request (400): genre title cant be an empty', async () => {
 			return request(app.getHttpServer())
 				.post(`/genre/create`)

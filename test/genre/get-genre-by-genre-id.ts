@@ -1,4 +1,3 @@
-import { testNewGenre } from './../data';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { TestingModule, Test } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -8,6 +7,7 @@ import { Types } from 'mongoose';
 
 config();
 
+import { testNewGenre } from './../data';
 import { GenreErrorMessages } from './../../src/utils/error-messages/genre-error-messages';
 import { MockAppModule } from '../mock-app.module';
 import { testAdminUser, testGenreNewUser } from '../data';

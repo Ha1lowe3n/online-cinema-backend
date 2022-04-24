@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
+	ApiBody,
 	ApiConflictResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -24,12 +25,14 @@ import {
 	BadRequestCreateGenreSwagger,
 	ConflictCreateGenreSwagger,
 	NotFoundGenreSwagger,
+	BadRequestUpdateGenreSwagger,
 } from './swagger';
 import { ForbiddenSwagger } from '../swagger/403-forbidden.swagger';
 import { GenreErrorMessages } from '../utils/error-messages/genre-error-messages';
 import { IdValidationPipe } from '../pipes/id-validation.pipe';
 import { CommonErrorMessages } from '../utils/error-messages/common-error-messages';
 import { BadRequestInvalidIdSwagger } from '../swagger/400-invalid-id.swagger';
+import { UpdateGenreDto } from './dto/update-genre.dto';
 
 @ApiTags('genre')
 @Controller('genre')
@@ -49,12 +52,12 @@ export class GenreController {
 	})
 	@Get('by-slug/:slug')
 	@AuthRoleGuard()
-	async getGenreBySlug(@Param('slug') slug: string) {
+	async getGenreBySlug(@Param('slug') slug: string): Promise<DocumentType<GenreModel>> {
 		return await this.genreService.getGenreBySlug(slug);
 	}
 
 	@ApiBearerAuth()
-	@ApiOperation({ summary: 'get genre by genre id' })
+	@ApiOperation({ summary: '[ADMIN] get genre by genre id' })
 	@ApiOkResponse({ description: 'get genre by genre id', type: SuccessReturnGenreSwagger })
 	@ApiBadRequestResponse({
 		description: CommonErrorMessages.ID_INVALID,
@@ -71,7 +74,9 @@ export class GenreController {
 	})
 	@Get(':id')
 	@AuthRoleGuard('admin')
-	async getGenreById(@Param('id', IdValidationPipe) id: string) {
+	async getGenreById(
+		@Param('id', IdValidationPipe) id: string,
+	): Promise<DocumentType<GenreModel>> {
 		return await this.genreService.getGenreById(id);
 	}
 
@@ -98,7 +103,7 @@ export class GenreController {
 	@ApiBearerAuth()
 	@ApiOperation({
 		summary: '[ADMIN] create genre',
-		description: 'only admin can update user role',
+		description: 'only admin can create genre',
 	})
 	@ApiCreatedResponse({ description: 'success - create genre', type: SuccessReturnGenreSwagger })
 	@ApiBadRequestResponse({
@@ -113,9 +118,36 @@ export class GenreController {
 		description: 'conflict - genre already registered',
 		type: ConflictCreateGenreSwagger,
 	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
 	@Post('create')
 	@AuthRoleGuard('admin')
-	async createGenre(@Body() dto: CreateGenreDto) {
+	async createGenre(@Body() dto: CreateGenreDto): Promise<DocumentType<GenreModel>> {
 		return await this.genreService.createGenre(dto);
+	}
+
+	@ApiBearerAuth()
+	@ApiOperation({
+		summary: '[ADMIN] update genre',
+		description: 'only admin can update genre',
+	})
+	@ApiBody({ type: CreateGenreDto })
+	@ApiOkResponse({ description: 'success - create genre', type: SuccessReturnGenreSwagger })
+	@ApiBadRequestResponse({
+		description: 'bad request - error validate dto or genre id',
+		type: BadRequestUpdateGenreSwagger,
+	})
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
+	@Patch('update/:id')
+	@AuthRoleGuard('admin')
+	@HttpCode(200)
+	async updateGenre(
+		@Param('id', IdValidationPipe) _id: string,
+		@Body() dto: UpdateGenreDto,
+	): Promise<DocumentType<GenreModel>> {
+		return await this.genreService.updateGenre(_id, dto);
 	}
 }

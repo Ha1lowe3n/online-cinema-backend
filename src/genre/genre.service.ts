@@ -18,7 +18,7 @@ import { CreateGenreDto } from './dto/create-genre.dto';
 export class GenreService {
 	constructor(@InjectModel(GenreModel) private readonly genreModel: ModelType<GenreModel>) {}
 
-	async getGenreBySlug(slug: string) {
+	async getGenreBySlug(slug: string): Promise<DocumentType<GenreModel>> {
 		const findGenre = await this.genreModel.findOne({ slug });
 		if (!findGenre) throw new NotFoundException(GenreErrorMessages.GENRE_NOT_FOUND);
 		return findGenre;
