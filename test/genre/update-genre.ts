@@ -11,7 +11,6 @@ config();
 import { AuthErrorMessages } from './../../src/utils/error-messages/auth-error-messages';
 import { GenreErrorMessages } from './../../src/utils/error-messages/genre-error-messages';
 import { CommonErrorMessages } from './../../src/utils/error-messages/common-error-messages';
-import { CreateGenreDto } from '../../src/genre/dto/create-genre.dto';
 import { UpdateGenreDto } from '../../src/genre/dto/update-genre.dto';
 import { MockAppModule } from '../mock-app.module';
 import { testAdminUser, testGenreNewUser } from '../data';
@@ -90,7 +89,7 @@ export const updateGenre = () => {
 			});
 
 		return request(app.getHttpServer())
-			.patch(`/genre/update/${genreId}`)
+			.patch(`/genre/${genreId}`)
 			.set('Authorization', 'Bearer ' + adminToken)
 			.send(updateDataGenre)
 			.expect(200)
@@ -104,7 +103,7 @@ export const updateGenre = () => {
 
 	it('fail - Bad request (400): invalid genre id', async () => {
 		return request(app.getHttpServer())
-			.patch(`/genre/update/123`)
+			.patch(`/genre/123`)
 			.set('Authorization', 'Bearer ' + adminToken)
 			.send(updateDataGenre)
 			.expect(400)
@@ -115,7 +114,7 @@ export const updateGenre = () => {
 
 	it('fail - Bad request (400): empty update genre dto', async () => {
 		return request(app.getHttpServer())
-			.patch(`/genre/update/${genreId}`)
+			.patch(`/genre/${genreId}`)
 			.set('Authorization', 'Bearer ' + adminToken)
 			.send({})
 			.expect(400)
@@ -126,7 +125,7 @@ export const updateGenre = () => {
 
 	it('fail - Unauthorized (401): Unauthorized user want to update genre', async () => {
 		return request(app.getHttpServer())
-			.patch(`/genre/update/${genreId}`)
+			.patch(`/genre/${genreId}`)
 			.send(updateDataGenre)
 			.expect(401)
 			.then(({ body }: request.Response) => {
@@ -139,7 +138,7 @@ export const updateGenre = () => {
 		const tokenWithFakeId = sign({ _id: fakeId }, process.env.JWT_SECRET_KEY);
 
 		return request(app.getHttpServer())
-			.patch(`/genre/update/${genreId}`)
+			.patch(`/genre/${genreId}`)
 			.set('Authorization', 'Bearer ' + tokenWithFakeId)
 			.send(updateDataGenre)
 			.expect(401)
@@ -150,7 +149,7 @@ export const updateGenre = () => {
 
 	it('fail - Forbidden (403): not an admin want to update genre', async () => {
 		return request(app.getHttpServer())
-			.patch(`/genre/update/${genreId}`)
+			.patch(`/genre/${genreId}`)
 			.set('Authorization', 'Bearer ' + userToken)
 			.send(updateDataGenre)
 			.expect(403)
@@ -159,10 +158,22 @@ export const updateGenre = () => {
 			});
 	});
 
+	it('fail - Not found (404): genre not found', async () => {
+		const fakeId = new Types.ObjectId().toHexString();
+		return request(app.getHttpServer())
+			.patch(`/genre/${fakeId}`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.send(updateDataGenre)
+			.expect(404)
+			.then(({ body }: request.Response) => {
+				expect(body.message).toBe(GenreErrorMessages.GENRE_NOT_FOUND);
+			});
+	});
+
 	describe('validate update dto', () => {
 		it('fail - Bad request (400): genre title cant be an empty', async () => {
 			return request(app.getHttpServer())
-				.post(`/genre/create`)
+				.patch(`/genre/${genreId}`)
 				.set('Authorization', 'Bearer ' + adminToken)
 				.send({ ...testNewGenre, title: '' })
 				.expect(400)
@@ -173,7 +184,7 @@ export const updateGenre = () => {
 
 		it('fail - Bad request (400): genre title should be a string', async () => {
 			return request(app.getHttpServer())
-				.post(`/genre/create`)
+				.patch(`/genre/${genreId}`)
 				.set('Authorization', 'Bearer ' + adminToken)
 				.send({ ...testNewGenre, title: 0 })
 				.expect(400)
@@ -184,7 +195,7 @@ export const updateGenre = () => {
 
 		it('fail - Bad request (400): slug should be a string', async () => {
 			return request(app.getHttpServer())
-				.post(`/genre/create`)
+				.patch(`/genre/${genreId}`)
 				.set('Authorization', 'Bearer ' + adminToken)
 				.send({ ...testNewGenre, slug: 0 })
 				.expect(400)
@@ -195,7 +206,7 @@ export const updateGenre = () => {
 
 		it('fail - Bad request (400): description should be a string', async () => {
 			return request(app.getHttpServer())
-				.post(`/genre/create`)
+				.patch(`/genre/${genreId}`)
 				.set('Authorization', 'Bearer ' + adminToken)
 				.send({ ...testNewGenre, description: 0 })
 				.expect(400)
@@ -208,7 +219,7 @@ export const updateGenre = () => {
 
 		it('fail - Bad request (400): icon should be a string', async () => {
 			return request(app.getHttpServer())
-				.post(`/genre/create`)
+				.patch(`/genre/${genreId}`)
 				.set('Authorization', 'Bearer ' + adminToken)
 				.send({ ...testNewGenre, icon: 0 })
 				.expect(400)

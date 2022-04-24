@@ -80,7 +80,6 @@ export class GenreController {
 		return await this.genreService.getGenreById(id);
 	}
 
-	@ApiBearerAuth()
 	@ApiOperation({ summary: 'get all genres or genre by searchTerm' })
 	@ApiQuery({ name: 'searchTerm', required: false })
 	@ApiOkResponse({
@@ -88,12 +87,7 @@ export class GenreController {
 		type: SuccessReturnGenreSwagger,
 		isArray: true,
 	})
-	@ApiUnauthorizedResponse({
-		description: AuthErrorMessages.UNAUTHORIZED,
-		type: UnauthorizedSwagger,
-	})
 	@Get()
-	@AuthRoleGuard()
 	async findGenres(
 		@Query('searchTerm') searchTerm?: string,
 	): Promise<DocumentType<GenreModel>[]> {
@@ -141,7 +135,11 @@ export class GenreController {
 		type: UnauthorizedSwagger,
 	})
 	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
-	@Patch('update/:id')
+	@ApiNotFoundResponse({
+		description: GenreErrorMessages.GENRE_NOT_FOUND,
+		type: NotFoundGenreSwagger,
+	})
+	@Patch(':id')
 	@AuthRoleGuard('admin')
 	@HttpCode(200)
 	async updateGenre(

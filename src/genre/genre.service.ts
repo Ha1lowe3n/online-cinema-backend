@@ -55,7 +55,10 @@ export class GenreService {
 		if (Object.keys(dto).length === 0) {
 			throw new BadRequestException(CommonErrorMessages.UPDATE_DTO_EMPTY);
 		}
-		return await this.genreModel.findByIdAndUpdate(_id, dto, { new: true });
+
+		const updatedGenre = await this.genreModel.findByIdAndUpdate(_id, dto, { new: true });
+		if (!updatedGenre) throw new NotFoundException(GenreErrorMessages.GENRE_NOT_FOUND);
+		return updatedGenre;
 	}
 
 	async deleteGenre(id: string): Promise<DocumentType<GenreModel>> {
