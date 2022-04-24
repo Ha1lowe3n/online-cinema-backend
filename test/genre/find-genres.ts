@@ -8,9 +8,6 @@ import { Types } from 'mongoose';
 
 config();
 
-import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
-import { GenreErrorMessages } from '../../src/utils/error-messages/genre-error-messages';
-
 import { MockAppModule } from '../mock-app.module';
 import { testAdminUser, testGenreNewUser } from '../data';
 import { CreateGenreDto } from '../../src/genre/dto/create-genre.dto';
@@ -21,6 +18,8 @@ export const findGenres = () => {
 	let adminToken: string;
 	let userToken: string;
 	let genreUserId: string;
+	let genreId1: string;
+	let genreId2: string;
 
 	const newGenre: CreateGenreDto = {
 		title: 'new genre',
@@ -68,15 +67,33 @@ export const findGenres = () => {
 			.delete(`/users/${genreUserId}`)
 			.set('Authorization', 'Bearer ' + adminToken)
 			.expect(200);
+		await request(app.getHttpServer())
+			.delete(`/genre/${genreId1}`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.expect(200);
+		await request(app.getHttpServer())
+			.delete(`/genre/${genreId2}`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.expect(200);
 	});
 
 	it('success - find all genres', async () => {
 		await request(app.getHttpServer())
 			.post(`/genre/create`)
 			.set('Authorization', 'Bearer ' + adminToken)
+			.send(testNewGenre)
+			.expect(201)
+			.then(({ body }: request.Response) => {
+				genreId1 = body._id;
+				expect(body.title).toBe(testNewGenre.title);
+			});
+		await request(app.getHttpServer())
+			.post(`/genre/create`)
+			.set('Authorization', 'Bearer ' + adminToken)
 			.send(newGenre)
 			.expect(201)
 			.then(({ body }: request.Response) => {
+				genreId2 = body._id;
 				expect(body.title).toBe(newGenre.title);
 			});
 

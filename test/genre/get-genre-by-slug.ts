@@ -18,6 +18,7 @@ export const getGenreBySlug = () => {
 	let adminToken: string;
 	let userToken: string;
 	let genreUserId: string;
+	let genreId: string;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -59,14 +60,30 @@ export const getGenreBySlug = () => {
 			.delete(`/users/${genreUserId}`)
 			.set('Authorization', 'Bearer ' + adminToken)
 			.expect(200);
+
+		await request(app.getHttpServer())
+			.delete(`/genre/${genreId}`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.expect(200);
 	});
 
 	it('success - get genre by slug', async () => {
+		await request(app.getHttpServer())
+			.post(`/genre/create`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.send(testNewGenre)
+			.expect(201)
+			.then(({ body }: request.Response) => {
+				genreId = body._id;
+				expect(body.title).toBe(testNewGenre.title);
+			});
+
 		return request(app.getHttpServer())
 			.get(`/genre/by-slug/${testNewGenre.slug}`)
 			.set('Authorization', 'Bearer ' + userToken)
 			.expect(200)
 			.then(({ body }: request.Response) => {
+				genreId = body._id;
 				expect(body.slug).toBe(testNewGenre.slug);
 				expect(body.title).toBe(testNewGenre.title);
 			});

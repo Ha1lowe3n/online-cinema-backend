@@ -20,6 +20,7 @@ export const createGenre = () => {
 	let adminToken: string;
 	let userToken: string;
 	let genreUserId: string;
+	let genreId: string;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -61,6 +62,11 @@ export const createGenre = () => {
 			.delete(`/users/${genreUserId}`)
 			.set('Authorization', 'Bearer ' + adminToken)
 			.expect(200);
+
+		await request(app.getHttpServer())
+			.delete(`/genre/${genreId}`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.expect(200);
 	});
 
 	it('success - create genre', async () => {
@@ -70,6 +76,7 @@ export const createGenre = () => {
 			.send(testNewGenre)
 			.expect(201)
 			.then(({ body }: request.Response) => {
+				genreId = body._id;
 				expect(body.title).toBe(testNewGenre.title);
 			});
 	});

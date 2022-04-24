@@ -1,5 +1,6 @@
 import { disconnect } from 'mongoose';
 import { createGenre } from './create-genre';
+import { deleteGenre } from './delete-genre';
 import { findGenres } from './find-genres';
 import { getGenreByGenreId } from './get-genre-by-genre-id';
 import { getGenreBySlug } from './get-genre-by-slug';
@@ -14,3 +15,4 @@ describe('genre/by-slug/:slug (GET)', getGenreBySlug);
 describe('genre?searchTerm (GET)', findGenres);
 describe('genre/:genreId (GET)', getGenreByGenreId);
 describe('genre/:genreId (PATCH)', updateGenre);
+describe('genre/:genreId (DELETE)', deleteGenre);

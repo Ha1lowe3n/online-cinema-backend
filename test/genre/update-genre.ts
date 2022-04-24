@@ -24,11 +24,6 @@ export const updateGenre = () => {
 	let genreUserId: string;
 	let genreId: string;
 
-	const newGenre3: CreateGenreDto = {
-		title: 'new genre 3',
-		slug: 'new-genre-3',
-		description: 'new genre 3 desc',
-	};
 	const updateDataGenre: UpdateGenreDto = {
 		title: 'somebody',
 		slug: 'some-body',
@@ -76,19 +71,22 @@ export const updateGenre = () => {
 			.delete(`/users/${genreUserId}`)
 			.set('Authorization', 'Bearer ' + adminToken)
 			.expect(200);
+
+		await request(app.getHttpServer())
+			.delete(`/genre/${genreId}`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.expect(200);
 	});
 
 	it('success - update genre', async () => {
 		await request(app.getHttpServer())
 			.post(`/genre/create`)
 			.set('Authorization', 'Bearer ' + adminToken)
-			.send(newGenre3)
+			.send(testNewGenre)
 			.expect(201)
 			.then(({ body }: request.Response) => {
 				genreId = body._id;
-				expect(body.title).toBe(newGenre3.title);
-				expect(body.slug).toBe(newGenre3.slug);
-				expect(body.description).toBe(newGenre3.description);
+				expect(body.title).toBe(testNewGenre.title);
 			});
 
 		return request(app.getHttpServer())

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
@@ -149,5 +149,29 @@ export class GenreController {
 		@Body() dto: UpdateGenreDto,
 	): Promise<DocumentType<GenreModel>> {
 		return await this.genreService.updateGenre(_id, dto);
+	}
+
+	@ApiBearerAuth()
+	@ApiOperation({
+		summary: '[ADMIN] delete genre',
+		description: 'only admin can delete genre',
+	})
+	@ApiBody({ type: CreateGenreDto })
+	@ApiOkResponse({ description: 'success - delete genre', type: SuccessReturnGenreSwagger })
+	@ApiBadRequestResponse({
+		description: 'bad request - invalid genre id',
+		type: BadRequestInvalidIdSwagger,
+	})
+	@ApiUnauthorizedResponse({
+		description: AuthErrorMessages.UNAUTHORIZED,
+		type: UnauthorizedSwagger,
+	})
+	@ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger })
+	@Delete(':id')
+	@AuthRoleGuard('admin')
+	async deleteGenre(
+		@Param('id', IdValidationPipe) _id: string,
+	): Promise<DocumentType<GenreModel>> {
+		return await this.genreService.deleteGenre(_id);
 	}
 }

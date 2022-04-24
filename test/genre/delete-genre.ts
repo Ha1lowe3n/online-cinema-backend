@@ -7,21 +7,26 @@ import { Types } from 'mongoose';
 
 config();
 
-import { testNewGenre } from './../data';
+import { AuthErrorMessages } from './../../src/utils/error-messages/auth-error-messages';
 import { GenreErrorMessages } from './../../src/utils/error-messages/genre-error-messages';
+import { CommonErrorMessages } from './../../src/utils/error-messages/common-error-messages';
+import { CreateGenreDto } from '../../src/genre/dto/create-genre.dto';
 import { MockAppModule } from '../mock-app.module';
 import { testAdminUser, testGenreNewUser } from '../data';
-import { CreateGenreDto } from '../../src/genre/dto/create-genre.dto';
-import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
-import { CommonErrorMessages } from '../../src/utils/error-messages/common-error-messages';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const getGenreByGenreId = () => {
+export const deleteGenre = () => {
 	let app: INestApplication;
 	let adminToken: string;
 	let userToken: string;
 	let genreUserId: string;
 	let genreId: string;
+
+	const newGenreForDelete: CreateGenreDto = {
+		title: 'new genre for delete',
+		slug: 'new-genre-for-delete',
+		description: 'new genre for delete desc',
+	};
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -63,48 +68,53 @@ export const getGenreByGenreId = () => {
 			.delete(`/users/${genreUserId}`)
 			.set('Authorization', 'Bearer ' + adminToken)
 			.expect(200);
+	});
+
+	it('success - delete genre', async () => {
+		await request(app.getHttpServer())
+			.post(`/genre/create`)
+			.set('Authorization', 'Bearer ' + adminToken)
+			.send(newGenreForDelete)
+			.expect(201)
+			.then(({ body }: request.Response) => {
+				genreId = body._id;
+				expect(body.title).toBe(newGenreForDelete.title);
+				expect(body.slug).toBe(newGenreForDelete.slug);
+				expect(body.description).toBe(newGenreForDelete.description);
+			});
 
 		await request(app.getHttpServer())
 			.delete(`/genre/${genreId}`)
 			.set('Authorization', 'Bearer ' + adminToken)
-			.expect(200);
-	});
-
-	it('success - get genre by slug', async () => {
-		await request(app.getHttpServer())
-			.post(`/genre/create`)
-			.set('Authorization', 'Bearer ' + adminToken)
-			.send(testNewGenre)
-			.expect(201)
+			.expect(200)
 			.then(({ body }: request.Response) => {
-				genreId = body._id;
-				expect(body.title).toBe(testNewGenre.title);
+				expect(body.title).toBe(newGenreForDelete.title);
+				expect(body.slug).toBe(newGenreForDelete.slug);
+				expect(body.description).toBe(newGenreForDelete.description);
 			});
 
 		return request(app.getHttpServer())
 			.get(`/genre/${genreId}`)
 			.set('Authorization', 'Bearer ' + adminToken)
-			.expect(200)
+			.expect(404)
 			.then(({ body }: request.Response) => {
-				expect(body.slug).toBe(testNewGenre.slug);
-				expect(body.title).toBe(testNewGenre.title);
+				expect(body.message).toBe(GenreErrorMessages.GENRE_NOT_FOUND);
 			});
 	});
 
 	it('fail - Bad request (400): invalid genre id', async () => {
 		return request(app.getHttpServer())
-			.get(`/genre/123`)
+			.delete(`/genre/123`)
 			.set('Authorization', 'Bearer ' + adminToken)
-			.send(testNewGenre)
 			.expect(400)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe(CommonErrorMessages.ID_INVALID);
 			});
 	});
 
-	it('fail - Unauthorized (401): Unauthorized', async () => {
+	it('fail - Unauthorized (401): Unauthorized user want to update genre', async () => {
 		return request(app.getHttpServer())
-			.get(`/genre/${genreId}`)
+			.delete(`/genre/${genreId}`)
 			.expect(401)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe('Unauthorized');
@@ -116,36 +126,21 @@ export const getGenreByGenreId = () => {
 		const tokenWithFakeId = sign({ _id: fakeId }, process.env.JWT_SECRET_KEY);
 
 		return request(app.getHttpServer())
-			.get(`/genre/${genreId}`)
+			.delete(`/genre/${genreId}`)
 			.set('Authorization', 'Bearer ' + tokenWithFakeId)
-			.send(testNewGenre)
 			.expect(401)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe('Unauthorized');
 			});
 	});
 
-	it('fail - Forbidden (403): user is not admin', async () => {
+	it('fail - Forbidden (403): not an admin want to update genre', async () => {
 		return request(app.getHttpServer())
-			.get(`/genre/${genreId}`)
+			.delete(`/genre/${genreId}`)
 			.set('Authorization', 'Bearer ' + userToken)
-			.send(testNewGenre)
 			.expect(403)
 			.then(({ body }: request.Response) => {
 				expect(body.message).toBe(AuthErrorMessages.FORBIDDEN);
-			});
-	});
-
-	it('fail - Not found (404): genre by slug not found', async () => {
-		const fakeId = new Types.ObjectId().toHexString();
-
-		return request(app.getHttpServer())
-			.get(`/genre/${fakeId}`)
-			.set('Authorization', 'Bearer ' + adminToken)
-			.send(testNewGenre)
-			.expect(404)
-			.then(({ body }: request.Response) => {
-				expect(body.message).toBe(GenreErrorMessages.GENRE_NOT_FOUND);
 			});
 	});
 };
