@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { path } from 'app-root-path';
 import { ensureDir, writeFile, remove } from 'fs-extra';
 import { access } from 'fs/promises';
@@ -55,7 +55,7 @@ export class FileService {
 			await access(uploadFolder);
 			await remove(uploadFolder);
 		} catch (err) {
-			throw new BadRequestException('Папка не существует');
+			throw new NotFoundException('Папка не существует');
 		}
 
 		return {

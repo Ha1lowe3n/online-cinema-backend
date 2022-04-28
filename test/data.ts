@@ -13,6 +13,10 @@ export const testUserNewUser: AuthDto = {
 	email: 'testUser@test.ru',
 	password: '12345',
 };
+export const testFileNewUser: AuthDto = {
+	email: 'testFile@test.ru',
+	password: '12345',
+};
 
 export const testAdminUser: AuthDto = {
 	email: 'admin@test.ru',
