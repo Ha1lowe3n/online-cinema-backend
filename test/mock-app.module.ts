@@ -6,6 +6,7 @@ import { getMockMongoDBConfig } from '../src/config/mock-mongo.config';
 import { Module } from '@nestjs/common';
 import { UserModule } from '../src/user/user.module';
 import { GenreModule } from '../src/genre/genre.module';
+import { FileModule } from '../src/file/file.module';
 
 @Module({
 	imports: [
@@ -17,6 +18,7 @@ import { GenreModule } from '../src/genre/genre.module';
 		AuthModule,
 		UserModule,
 		GenreModule,
+		FileModule,
 	],
 })
 export class MockAppModule {}
