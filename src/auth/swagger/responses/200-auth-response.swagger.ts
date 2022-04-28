@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
-import { IAuthResponse, ReturnUserFieldsType } from '../types/auth-types';
+import { IAuthResponse, ReturnUserFieldsType } from '../../types/auth-types';
 
 class User implements ReturnUserFieldsType {
 	@ApiProperty({ example: '625e8e3b802fdd2df1ee2cdf' })

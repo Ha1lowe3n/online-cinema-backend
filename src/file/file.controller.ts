@@ -11,17 +11,8 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-	ApiBearerAuth,
-	ApiBody,
-	ApiConsumes,
-	ApiOperation,
-	ApiQuery,
-	ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthRoleGuard } from '../auth/decorators/auth-role.decorator';
-import { UpdateFileDto } from './dto/update-file-dto';
-import { FileUploadDto } from './dto/upload-file.dto';
 import { FileService } from './file.service';
 import { MFile } from './mfile.class';
 import { UploadFileSwagger } from './swagger/decorators/upload-file.swagger.decorator';
