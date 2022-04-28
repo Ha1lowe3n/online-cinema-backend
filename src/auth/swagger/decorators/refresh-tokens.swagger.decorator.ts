@@ -15,7 +15,7 @@ import {
 } from '../responses';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const RefreshTokensSwagger = () => {
+export const ApiRefreshTokens = () => {
 	return applyDecorators(
 		ApiOperation({
 			summary: 'refresh tokens',

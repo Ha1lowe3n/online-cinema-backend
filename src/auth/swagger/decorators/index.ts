@@ -1,5 +1,5 @@
-import { LoginSwagger } from './login.swagger.decorator';
-import { RefreshTokensSwagger } from './refresh-tokens.swagger.decorator';
-import { RegisterSwagger } from './register.swagger.decorator';
+import { ApiLogin } from './login.swagger.decorator';
+import { ApiRefreshTokens } from './refresh-tokens.swagger.decorator';
+import { ApiRegister } from './register.swagger.decorator';
 
-export { RegisterSwagger, LoginSwagger, RefreshTokensSwagger };
+export { ApiRegister, ApiLogin, ApiRefreshTokens };

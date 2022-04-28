@@ -10,7 +10,7 @@ import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages'
 import { AuthResponseSwagger, BadRequestLoginSwagger, NotFoundLoginSwagger } from '../responses';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const LoginSwagger = () => {
+export const ApiLogin = () => {
 	return applyDecorators(
 		ApiOperation({ summary: 'user login', description: 'User authorization' }),
 		ApiOkResponse({ description: 'User is authorized', type: AuthResponseSwagger }),

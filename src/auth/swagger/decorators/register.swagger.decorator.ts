@@ -15,7 +15,7 @@ import {
 } from '../responses';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const RegisterSwagger = () => {
+export const ApiRegister = () => {
 	return applyDecorators(
 		ApiOperation({
 			summary: 'user registration',
