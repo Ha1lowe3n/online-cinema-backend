@@ -12,7 +12,7 @@ import {
 
 import { CreateGenreDto } from 'src/genre/dto/create-genre.dto';
 import { ForbiddenSwagger } from 'src/swagger/403-forbidden.swagger';
-import { UnauthorizedSwagger } from 'src/user/swagger';
+import { UnauthorizedSwagger } from 'src/user/swagger/responses';
 import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
 import { GenreErrorMessages } from 'src/utils/error-messages/genre-error-messages';
 import {

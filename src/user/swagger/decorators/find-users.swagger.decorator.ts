@@ -1,34 +1,31 @@
 import { applyDecorators } from '@nestjs/common';
 import {
-	ApiBadRequestResponse,
 	ApiBearerAuth,
-	ApiBody,
 	ApiForbiddenResponse,
 	ApiOkResponse,
 	ApiOperation,
+	ApiQuery,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { CreateGenreDto } from 'src/genre/dto/create-genre.dto';
-import { BadRequestInvalidIdSwagger } from 'src/swagger/400-invalid-id.swagger';
 import { ForbiddenSwagger } from 'src/swagger/403-forbidden.swagger';
-import { UnauthorizedSwagger } from 'src/user/swagger/responses';
+import { SuccessFindUsersSwagger, UnauthorizedSwagger } from 'src/user/swagger/responses';
 import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
-import { SuccessReturnGenreSwagger } from '../responses';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const ApiDeleteGenre = () => {
+export const ApiFindUsers = () => {
 	return applyDecorators(
 		ApiBearerAuth(),
 		ApiOperation({
-			summary: '[ADMIN] delete genre',
-			description: 'only admin can delete genre',
+			summary: '[ADMIN] find all users or user by email with searchTerm (query param)',
+			description: `Only admin can find all users or user by email. 
+			Can get empty array if users count = 0 or user email not found`,
 		}),
-		ApiBody({ type: CreateGenreDto }),
-		ApiOkResponse({ description: 'success - delete genre', type: SuccessReturnGenreSwagger }),
-		ApiBadRequestResponse({
-			description: 'bad request - invalid genre id',
-			type: BadRequestInvalidIdSwagger,
+		ApiQuery({ name: 'searchTerm', required: false }),
+		ApiOkResponse({
+			description: 'find all users or user by email',
+			type: SuccessFindUsersSwagger,
+			isArray: true,
 		}),
 		ApiUnauthorizedResponse({
 			description: AuthErrorMessages.UNAUTHORIZED,

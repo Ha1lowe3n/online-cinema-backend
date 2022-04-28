@@ -2,45 +2,37 @@ import { applyDecorators } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
-	ApiConflictResponse,
-	ApiCreatedResponse,
 	ApiForbiddenResponse,
+	ApiOkResponse,
 	ApiOperation,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
+import { BadRequestInvalidIdSwagger } from 'src/swagger/400-invalid-id.swagger';
 import { ForbiddenSwagger } from 'src/swagger/403-forbidden.swagger';
-import { UnauthorizedSwagger } from 'src/user/swagger/responses';
+import { SuccessGetProfileSwagger, UnauthorizedSwagger } from 'src/user/swagger/responses';
 import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
-import {
-	BadRequestCreateGenreSwagger,
-	ConflictCreateGenreSwagger,
-	SuccessReturnGenreSwagger,
-} from '../responses';
+import { CommonErrorMessages } from 'src/utils/error-messages/common-error-messages';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const ApiCreateGenre = () => {
+export const ApiDeleteUser = () => {
 	return applyDecorators(
 		ApiBearerAuth(),
 		ApiOperation({
-			summary: '[ADMIN] create genre',
-			description: 'only admin can create genre',
+			summary: '[ADMIN] delete user by id',
+			description: 'only admin can delete user',
 		}),
-		ApiCreatedResponse({
-			description: 'success - create genre',
-			type: SuccessReturnGenreSwagger,
+		ApiOkResponse({
+			description: 'Only admin can delete user',
+			type: SuccessGetProfileSwagger,
 		}),
 		ApiBadRequestResponse({
-			description: 'bad request - error validate dto',
-			type: BadRequestCreateGenreSwagger,
+			description: CommonErrorMessages.ID_INVALID,
+			type: BadRequestInvalidIdSwagger,
 		}),
 		ApiUnauthorizedResponse({
 			description: AuthErrorMessages.UNAUTHORIZED,
 			type: UnauthorizedSwagger,
-		}),
-		ApiConflictResponse({
-			description: 'conflict - genre already registered',
-			type: ConflictCreateGenreSwagger,
 		}),
 		ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger }),
 	);

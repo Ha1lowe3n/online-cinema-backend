@@ -2,7 +2,6 @@ import { applyDecorators } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
-	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -10,19 +9,23 @@ import {
 } from '@nestjs/swagger';
 
 import { BadRequestInvalidIdSwagger } from 'src/swagger/400-invalid-id.swagger';
-import { ForbiddenSwagger } from 'src/swagger/403-forbidden.swagger';
-import { UnauthorizedSwagger } from 'src/user/swagger/responses';
+import {
+	NotFoundUserSwagger,
+	SuccessGetProfileSwagger,
+	UnauthorizedSwagger,
+} from 'src/user/swagger/responses';
 import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
 import { CommonErrorMessages } from 'src/utils/error-messages/common-error-messages';
-import { GenreErrorMessages } from 'src/utils/error-messages/genre-error-messages';
-import { NotFoundGenreSwagger, SuccessReturnGenreSwagger } from '../responses';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const ApiGetGenreById = () => {
+export const ApiGetProfile = () => {
 	return applyDecorators(
 		ApiBearerAuth(),
-		ApiOperation({ summary: '[ADMIN] get genre by genre id' }),
-		ApiOkResponse({ description: 'get genre by genre id', type: SuccessReturnGenreSwagger }),
+		ApiOperation({
+			summary: 'get user profile by token',
+			description: 'get user profile by token. Inside token take _id',
+		}),
+		ApiOkResponse({ description: 'get profile by token', type: SuccessGetProfileSwagger }),
 		ApiBadRequestResponse({
 			description: CommonErrorMessages.ID_INVALID,
 			type: BadRequestInvalidIdSwagger,
@@ -31,10 +34,6 @@ export const ApiGetGenreById = () => {
 			description: AuthErrorMessages.UNAUTHORIZED,
 			type: UnauthorizedSwagger,
 		}),
-		ApiForbiddenResponse({ description: AuthErrorMessages.FORBIDDEN, type: ForbiddenSwagger }),
-		ApiNotFoundResponse({
-			description: GenreErrorMessages.GENRE_NOT_FOUND,
-			type: NotFoundGenreSwagger,
-		}),
+		ApiNotFoundResponse({ description: 'User not found', type: NotFoundUserSwagger }),
 	);
 };

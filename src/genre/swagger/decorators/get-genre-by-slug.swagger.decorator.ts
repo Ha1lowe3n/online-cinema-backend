@@ -7,7 +7,7 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { UnauthorizedSwagger } from 'src/user/swagger';
+import { UnauthorizedSwagger } from 'src/user/swagger/responses';
 import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
 import { GenreErrorMessages } from 'src/utils/error-messages/genre-error-messages';
 import { NotFoundGenreSwagger, SuccessReturnGenreSwagger } from '../responses';
