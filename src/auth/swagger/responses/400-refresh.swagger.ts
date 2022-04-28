@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AuthErrorMessages } from '../../utils/error-messages/auth-error-messages';
-import { BadRequestSwagger } from '../../swagger/400-bad-request.swagger';
+import { AuthErrorMessages } from '../../../utils/error-messages/auth-error-messages';
+import { BadRequestSwagger } from '../../../swagger/400-bad-request.swagger';
 
 const { REFRESH_TOKEN_NOT_CORRECT } = AuthErrorMessages;
 

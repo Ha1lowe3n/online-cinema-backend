@@ -8,11 +8,11 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { BadRequestInvalidIdSwagger } from 'src/swagger/400-invalid-id.swagger';
-import { ForbiddenSwagger } from 'src/swagger/403-forbidden.swagger';
-import { SuccessGetProfileSwagger, UnauthorizedSwagger } from 'src/user/swagger/responses';
-import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
-import { CommonErrorMessages } from 'src/utils/error-messages/common-error-messages';
+import { BadRequestInvalidIdSwagger } from '../../../swagger/400-invalid-id.swagger';
+import { ForbiddenSwagger } from '../../../swagger/403-forbidden.swagger';
+import { SuccessGetProfileSwagger, UnauthorizedSwagger } from '../responses';
+import { AuthErrorMessages } from '../../../utils/error-messages/auth-error-messages';
+import { CommonErrorMessages } from '../../../utils/error-messages/common-error-messages';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const ApiDeleteUser = () => {

@@ -6,7 +6,7 @@ import {
 	ApiOkResponse,
 	ApiOperation,
 } from '@nestjs/swagger';
-import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
+import { AuthErrorMessages } from '../../../utils/error-messages/auth-error-messages';
 import { AuthResponseSwagger, BadRequestLoginSwagger, NotFoundLoginSwagger } from '../responses';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

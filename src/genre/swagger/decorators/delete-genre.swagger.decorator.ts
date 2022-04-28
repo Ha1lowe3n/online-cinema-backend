@@ -9,11 +9,11 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { CreateGenreDto } from 'src/genre/dto/create-genre.dto';
-import { BadRequestInvalidIdSwagger } from 'src/swagger/400-invalid-id.swagger';
-import { ForbiddenSwagger } from 'src/swagger/403-forbidden.swagger';
-import { UnauthorizedSwagger } from 'src/user/swagger/responses';
-import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
+import { CreateGenreDto } from '../../dto/create-genre.dto';
+import { BadRequestInvalidIdSwagger } from '../../../swagger/400-invalid-id.swagger';
+import { ForbiddenSwagger } from '../../../swagger/403-forbidden.swagger';
+import { UnauthorizedSwagger } from '../../../user/swagger/responses';
+import { AuthErrorMessages } from '../../../utils/error-messages/auth-error-messages';
 import { SuccessReturnGenreSwagger } from '../responses';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

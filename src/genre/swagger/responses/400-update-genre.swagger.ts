@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CommonErrorMessages } from '../../utils/error-messages/common-error-messages';
-import { BadRequestSwagger } from '../../swagger/400-bad-request.swagger';
+import { CommonErrorMessages } from '../../../utils/error-messages/common-error-messages';
+import { BadRequestSwagger } from '../../../swagger/400-bad-request.swagger';
 
 const { ID_INVALID, UPDATE_DTO_EMPTY } = CommonErrorMessages;
 

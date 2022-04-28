@@ -8,9 +8,9 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { ForbiddenSwagger } from 'src/swagger/403-forbidden.swagger';
-import { SuccessFindUsersSwagger, UnauthorizedSwagger } from 'src/user/swagger/responses';
-import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
+import { ForbiddenSwagger } from '../../../swagger/403-forbidden.swagger';
+import { SuccessFindUsersSwagger, UnauthorizedSwagger } from '../responses';
+import { AuthErrorMessages } from '../../../utils/error-messages/auth-error-messages';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const ApiFindUsers = () => {

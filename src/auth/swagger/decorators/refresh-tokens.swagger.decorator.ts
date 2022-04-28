@@ -7,7 +7,7 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
+import { AuthErrorMessages } from '../../../utils/error-messages/auth-error-messages';
 import {
 	AuthResponseSwagger,
 	BadRequestRefreshSwagger,

@@ -11,9 +11,9 @@ import {
 	BadRequestUpdateSwagger,
 	SuccessUpdateUserSwagger,
 	UnauthorizedSwagger,
-} from 'src/user/swagger/responses';
-import { AuthErrorMessages } from 'src/utils/error-messages/auth-error-messages';
-import { CommonErrorMessages } from 'src/utils/error-messages/common-error-messages';
+} from '../responses';
+import { AuthErrorMessages } from '../../../utils/error-messages/auth-error-messages';
+import { CommonErrorMessages } from '../../../utils/error-messages/common-error-messages';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const ApiUpdateUserProfile = () => {
