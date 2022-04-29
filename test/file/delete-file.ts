@@ -4,13 +4,11 @@ import * as request from 'supertest';
 import { sign } from 'jsonwebtoken';
 import { config } from 'dotenv';
 import { Types } from 'mongoose';
-import { remove } from 'fs-extra';
-import { path } from 'app-root-path';
 
 config();
 
 import { MockAppModule } from '../mock-app.module';
-import { testAdminUser, testFileNewUser, testGenreNewUser } from '../data';
+import { testAdminUser, testFileNewUser } from '../data';
 import { AuthErrorMessages } from '../../src/utils/error-messages/auth-error-messages';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -19,11 +17,6 @@ export const fileDelete = () => {
 	let adminToken: string;
 	let fileUserId: string;
 	let userToken: string;
-
-	const pathTestFilePng = `${path}/test/file/test-files/test-file.png`;
-	const pathTestFileWebp = `${path}/test/file/test-files/test-file.webp`;
-	const pathTestFileHtml = `${path}/test/file/test-files/test-file.html`;
-	const pathTestFolder = `${path}/uploads/test`;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
