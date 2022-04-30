@@ -8,7 +8,7 @@ import { ModelType, DocumentType } from '@typegoose/typegoose/lib/types';
 import { InjectModel } from 'nestjs-typegoose';
 
 import { CommonErrorMessages } from '../utils/error-messages/common-error-messages';
-import { ActorErrorMessages } from '../utils/error-messages/actor-error.messages';
+import { ActorErrorMessages } from '../utils/error-messages/actor-error-messages';
 import { ActorModel } from './actor.model';
 import { CreateActorDto } from './dto/create-actor.dto';
 import { UpdateActorDto } from './dto/update-actor.dto';
@@ -28,9 +28,9 @@ export class ActorService {
 		if (searchTerm) {
 			options = {
 				$or: [
-					{ title: new RegExp(searchTerm, 'i') },
+					{ name: new RegExp(searchTerm, 'i') },
 					{ slug: new RegExp(searchTerm, 'i') },
-					{ description: new RegExp(searchTerm, 'i') },
+					{ photo: new RegExp(searchTerm, 'i') },
 				],
 			};
 		}

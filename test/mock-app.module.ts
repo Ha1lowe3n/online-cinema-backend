@@ -7,6 +7,7 @@ import { Module } from '@nestjs/common';
 import { UserModule } from '../src/user/user.module';
 import { GenreModule } from '../src/genre/genre.module';
 import { FileModule } from '../src/file/file.module';
+import { ActorModule } from '../src/actor/actor.module';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { FileModule } from '../src/file/file.module';
 		UserModule,
 		GenreModule,
 		FileModule,
+		ActorModule,
 	],
 })
 export class MockAppModule {}

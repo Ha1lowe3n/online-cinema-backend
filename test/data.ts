@@ -1,3 +1,4 @@
+import { CreateActorDto } from '../src/actor/dto/create-actor.dto';
 import { AuthDto } from '../src/auth/dto/auth.dto';
 import { CreateGenreDto } from '../src/genre/dto/create-genre.dto';
 
@@ -17,6 +18,10 @@ export const testFileNewUser: AuthDto = {
 	email: 'testFile@test.ru',
 	password: '12345',
 };
+export const testActorNewUser: AuthDto = {
+	email: 'testActor@test.ru',
+	password: '12345',
+};
 
 export const testAdminUser: AuthDto = {
 	email: 'admin@test.ru',
@@ -26,4 +31,10 @@ export const testAdminUser: AuthDto = {
 export const testNewGenre: CreateGenreDto = {
 	title: 'horror',
 	slug: 'some-slug',
+};
+
+export const testNewActor: CreateActorDto = {
+	name: 'John Smith',
+	slug: 'john-smith',
+	photo: 'some photo',
 };
